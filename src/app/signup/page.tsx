@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -11,14 +11,49 @@ export default function SignupPage() {
   const [businessName, setBusinessName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [step, setStep] = useState<'form' | 'confirm'>('form');
+  const [devCode, setDevCode] = useState('');
+  const checkingRef = useRef(false);
 
   // If user is already logged in, redirect to dashboard
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push('/dashboard');
+      if (session) router.replace('/dashboard');
     });
   }, []);
+
+  // Poll for session after signup (handles email confirmation redirect)
+  useEffect(() => {
+    if (step !== 'confirm' || checkingRef.current) return;
+    
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase
+          .from('profiles')
+          .update({ business_name: businessName })
+          .eq('id', session.user.id);
+        router.replace('/dashboard');
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately
+    checkingRef.current = true;
+    checkSession().then((found) => {
+      if (!found) {
+        // Poll every 3 seconds for 2 minutes
+        const interval = setInterval(async () => {
+          const found = await checkSession();
+          if (found) clearInterval(interval);
+        }, 3000);
+        
+        // Stop after 2 minutes
+        setTimeout(() => clearInterval(interval), 120000);
+      }
+    });
+  }, [step, businessName, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +67,7 @@ export default function SignupPage() {
         password,
         options: {
           data: { business_name: businessName },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/signup?confirmed=true&email=${encodeURIComponent(email)}&business=${encodeURIComponent(businessName)}`,
         },
       });
 
@@ -41,40 +76,27 @@ export default function SignupPage() {
         return;
       }
 
-      // Step 2: If we got a session (email confirmation disabled), go straight to dashboard
-      if (signupData?.session) {
-        // Update profile with business name
-        if (signupData.user) {
-          await supabase
-            .from('profiles')
-            .update({ business_name: businessName })
-            .eq('id', signupData.user.id);
-        }
-        router.push('/dashboard');
-        return;
-      }
-
-      // Step 3: If no session (email confirmation enabled), try signing in anyway
-      // This works if "Confirm email" is disabled in Supabase settings
+      // Step 2: Try immediate sign-in (works if email confirmation is disabled)
       const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signinError) {
-        // Email confirmation is required — show message but still try to help
-        setSuccess(true);
+      if (!signinError && signinData?.session) {
+        // Email confirmation NOT required — go straight to dashboard
+        if (signinData.user) {
+          await supabase
+            .from('profiles')
+            .update({ business_name: businessName })
+            .eq('id', signinData.user.id);
+        }
+        router.replace('/dashboard');
         return;
       }
 
-      // Signed in successfully
-      if (signinData?.user) {
-        await supabase
-          .from('profiles')
-          .update({ business_name: businessName })
-          .eq('id', signinData.user.id);
-        router.push('/dashboard');
-      }
+      // Step 3: Email confirmation required — show confirmation screen
+      setStep('confirm');
+      checkingRef.current = false; // Will trigger the polling effect
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
     } finally {
@@ -82,29 +104,42 @@ export default function SignupPage() {
     }
   };
 
-  if (success) {
+  // Handle the redirect back from email confirmation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('confirmed') === 'true') {
+      // User came back from email confirmation — try signing in
+      const savedEmail = params.get('email');
+      const savedBusiness = params.get('business') || '';
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setBusinessName(savedBusiness);
+      }
+    }
+  }, []);
+
+  if (step === 'confirm') {
     return (
       <div className="min-h-screen bg-[#f8f7ff] flex items-center justify-center px-4">
         <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-[#f59e0b]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-[#d97706]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-16 h-16 bg-[#533afd]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-[#533afd]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
             </svg>
           </div>
           <h2 className="text-2xl font-light text-[#061b31] mb-2">Check your email</h2>
           <p className="text-[#64748d] text-sm mb-4">
-            We sent a confirmation link to <strong>{email}</strong>. Click it to verify your account.
+            We sent a confirmation link to <strong className="text-[#061b31]">{email}</strong>. Click it to verify your account.
           </p>
-          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-4">
-            <p className="font-medium text-[#273951] mb-1">💡 Quick fix:</p>
-            <p>After clicking the confirmation link, come back and <strong>sign in</strong> with your email and password.</p>
+          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-6">
+            <p className="font-medium text-[#273951] mb-1">💡 After clicking the link:</p>
+            <p>Come back to this tab — we'll automatically sign you in and take you to the dashboard.</p>
           </div>
-          <button
-            onClick={() => router.push('/login')}
-            className="text-[#533afd] text-sm font-medium hover:underline"
-          >
-            Go to sign in →
-          </button>
+          <div className="flex items-center justify-center gap-2 text-sm text-[#64748d]">
+            <div className="w-4 h-4 border-2 border-[#533afd] border-t-transparent rounded-full animate-spin" />
+            Waiting for confirmation...
+          </div>
         </div>
       </div>
     );
