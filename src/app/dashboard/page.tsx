@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface Invoice {
   id: string;
@@ -27,7 +27,6 @@ export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +60,7 @@ export default function DashboardPage() {
   useEffect(() => {
     checkUser();
     // Show welcome modal for new signups
-    if (searchParams.get('welcome') === 'true') {
+    if (typeof window !== 'undefined' && window.location.search.includes('welcome=true')) {
       setShowWelcomeModal(true);
     }
   }, []);
