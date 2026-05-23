@@ -20,6 +20,10 @@ interface Settings {
   business_name: string;
   phone: string;
   sms_configured: boolean;
+  sms_sender_type: string;
+  own_sender_number: string;
+  sms_sender_label: string;
+  default_sender: string;
 }
 
 export default function DashboardPage() {
@@ -45,15 +49,21 @@ export default function DashboardPage() {
     business_name: '',
     phone: '',
     sms_configured: false,
+    sms_sender_type: 'shared',
+    own_sender_number: '',
+    sms_sender_label: '',
+    default_sender: 'PayRescue',
   });
   const [settingsForm, setSettingsForm] = useState({
     business_name: '',
     phone: '',
+    sms_sender_type: 'shared',
+    own_sender_number: '',
+    sms_sender_label: '',
   });
 
   useEffect(() => {
     checkUser();
-    // Show welcome modal for new signups
     if (typeof window !== 'undefined' && window.location.search.includes('welcome=true')) {
       setShowWelcomeModal(true);
     }
@@ -81,6 +91,9 @@ export default function DashboardPage() {
         setSettingsForm({
           business_name: data.business_name || '',
           phone: data.phone || '',
+          sms_sender_type: data.sms_sender_type || 'shared',
+          own_sender_number: data.own_sender_number || '',
+          sms_sender_label: data.sms_sender_label || '',
         });
       }
     } catch (e) {
@@ -163,7 +176,8 @@ export default function DashboardPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setSmsResult({ type: 'success', message: 'SMS sent successfully!' });
+        const senderLabel = data.sender || 'SMS';
+        setSmsResult({ type: 'success', message: `SMS sent via ${senderLabel}` });
         loadInvoices(user.id);
       } else {
         setSmsResult({ type: 'error', message: data.error || 'Failed to send SMS' });
@@ -228,6 +242,17 @@ export default function DashboardPage() {
     paid: 'bg-[#15be53]/10 text-[#108c3d]',
   };
 
+  // Human-readable sender description
+  const getSenderDescription = () => {
+    if (settings.sms_sender_type === 'own_number' && settings.own_sender_number) {
+      return `Your number (${settings.own_sender_number})`;
+    }
+    if (settings.sms_sender_type === 'business_name' && settings.business_name) {
+      return `Business name (${settings.business_name.slice(0, 11)})`;
+    };
+    return `Shared number (${settings.default_sender})`;
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7ff]">
       {/* Header */}
@@ -273,6 +298,13 @@ export default function DashboardPage() {
           >
             <span>{smsResult.message}</span>
             <button onClick={() => setSmsResult(null)} className="text-current opacity-60 hover:opacity-100">✕</button>
+          </div>
+        )}
+
+        {/* SMS Not Configured Warning */}
+        {!settings.sms_configured && (
+          <div className="mb-4 px-4 py-3 rounded-lg text-sm font-medium bg-[#f59e0b]/10 text-[#d97706] border border-[#f59e0b]/20">
+            SMS provider not configured yet. Reminders will work once the admin connects the Mobile Message account.
           </div>
         )}
 
@@ -416,7 +448,7 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Welcome Modal — simple onboarding */}
+      {/* Welcome Modal */}
       {showWelcomeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
@@ -437,7 +469,7 @@ export default function DashboardPage() {
               </ol>
             </div>
 
-            {/* Optional: set business name */}
+            {/* Business name */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-[#273951] mb-1 text-left">Your business name <span className="text-[#64748d] font-normal">(optional)</span></label>
               <input
@@ -538,13 +570,14 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Settings Modal */}
+      {/* Settings Modal — with SMS sender config */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-md w-full">
+          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-medium text-[#061b31] mb-4">Settings</h3>
 
-            <form onSubmit={handleSaveSettings} className="space-y-4">
+            <form onSubmit={handleSaveSettings} className="space-y-5">
+              {/* Business Name */}
               <div>
                 <label className="block text-sm font-medium text-[#273951] mb-1">Business name</label>
                 <input
@@ -556,13 +589,97 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div className="pt-2">
-                <div className="flex items-center gap-2 text-sm text-[#108c3d] bg-[#15be53]/10 px-3 py-2 rounded-lg">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  SMS reminders connected and ready
+              {/* SMS Sender Section */}
+              <div>
+                <label className="block text-sm font-medium text-[#273951] mb-2">SMS sender</label>
+                <p className="text-xs text-[#64748d] mb-3">
+                  Choose what your customers see as the sender when they get your text reminders.
+                </p>
+
+                <div className="space-y-2">
+                  {/* Option 1: Shared/Default */}
+                  <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                    settingsForm.sms_sender_type === 'shared'
+                      ? 'border-[#533afd] bg-[#533afd]/5'
+                      : 'border-[#e5edf5] hover:border-[#b9b9f9]'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="sms_sender_type"
+                      value="shared"
+                      checked={settingsForm.sms_sender_type === 'shared'}
+                      onChange={() => setSettingsForm({ ...settingsForm, sms_sender_type: 'shared' })}
+                      className="mt-0.5 accent-[#533afd]"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-[#061b31]">Shared number (default)</div>
+                      <div className="text-xs text-[#64748d]">
+                        Customers see SMS from <strong>{settings.default_sender}</strong>. Works out of the box. Replies come back to the app.
+                      </div>
+                    </div>
+                  </label>
+
+                  {/* Option 2: Own number */}
+                  <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                    settingsForm.sms_sender_type === 'own_number'
+                      ? 'border-[#533afd] bg-[#533afd]/5'
+                      : 'border-[#e5edf5] hover:border-[#b9b9f9]'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="sms_sender_type"
+                      value="own_number"
+                      checked={settingsForm.sms_sender_type === 'own_number'}
+                      onChange={() => setSettingsForm({ ...settingsForm, sms_sender_type: 'own_number' })}
+                      className="mt-0.5 accent-[#533afd]"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-[#061b31]">My own mobile number</div>
+                      <div className="text-xs text-[#64748d] mb-2">
+                        Customers see SMS from <strong>your</strong> phone number. Looks more personal. You'll need to verify your number.
+                      </div>
+                      {settingsForm.sms_sender_type === 'own_number' && (
+                        <input
+                          type="tel"
+                          value={settingsForm.own_sender_number}
+                          onChange={(e) => setSettingsForm({ ...settingsForm, own_sender_number: e.target.value })}
+                          placeholder="e.g. 0412 345 678"
+                          className="w-full px-3 py-2 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm mt-1"
+                        />
+                      )}
+                    </div>
+                  </label>
+
+                  {/* Option 3: Business name */}
+                  <label className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                    settingsForm.sms_sender_type === 'business_name'
+                      ? 'border-[#533afd] bg-[#533afd]/5'
+                      : 'border-[#e5edf5] hover:border-[#b9b9f9]'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="sms_sender_type"
+                      value="business_name"
+                      checked={settingsForm.sms_sender_type === 'business_name'}
+                      onChange={() => setSettingsForm({ ...settingsForm, sms_sender_type: 'business_name' })}
+                      className="mt-0.5 accent-[#533afd]"
+                    />
+                    <div>
+                      <div className="text-sm font-medium text-[#061b31]">Business name</div>
+                      <div className="text-xs text-[#64748d]">
+                        Customers see your business name (e.g. <strong>{settingsForm.business_name?.slice(0, 11) || 'SmithLands'}</strong>). Can't receive replies. Requires ABN registration with ACMA by July 2026.
+                      </div>
+                    </div>
+                  </label>
                 </div>
+              </div>
+
+              {/* Current sender indicator */}
+              <div className="flex items-center gap-2 text-sm text-[#108c3d] bg-[#15be53]/10 px-3 py-2 rounded-lg">
+                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>SMS sending via: <strong>{getSenderDescription()}</strong></span>
               </div>
 
               <div className="flex gap-3 pt-2">

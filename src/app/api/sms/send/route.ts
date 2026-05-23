@@ -3,8 +3,9 @@ import { createServerClient } from '@/lib/supabase';
 
 const MOBILE_MESSAGE_API = 'https://api.mobilemessage.com.au/v1/messages';
 
-// Server-side Mobile Message credentials (shared across all users)
-const MM_API_KEY = process.env.MOBILE_MESSAGE_API_KEY || '';
+// App-level Mobile Message credentials (shared pool)
+const MM_USERNAME = process.env.MOBILE_MESSAGE_USERNAME || '';
+const MM_PASSWORD = process.env.MOBILE_MESSAGE_PASSWORD || '';
 const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_DEFAULT_SENDER || 'PayRescue';
 
 async function sendViaMobileMessage(
@@ -46,7 +47,7 @@ async function sendViaMobileMessage(
 // POST /api/sms/send — send an SMS reminder
 export async function POST(req: NextRequest) {
   try {
-    if (!MM_API_KEY) {
+    if (!MM_USERNAME || !MM_PASSWORD) {
       return NextResponse.json(
         { error: 'SMS provider not configured. Please contact support.' },
         { status: 500 }
@@ -55,7 +56,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Get current user
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -91,6 +91,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get user's SMS sender preference
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('business_name, sms_sender_type, own_sender_number, sms_sender_label')
+      .eq('id', userId)
+      .single();
+
+    // Determine sender
+    let sender = MM_DEFAULT_SENDER;
+    const senderType = profile?.sms_sender_type || 'shared';
+
+    if (senderType === 'own_number' && profile?.own_sender_number) {
+      // User has ported their own number — use it
+      sender = profile.own_sender_number;
+    } else if (senderType === 'business_name' && profile?.business_name) {
+      // Alphanumeric sender ID (business name)
+      sender = profile.business_name.slice(0, 11); // ACMA max 11 chars
+    }
+    // else: use default shared sender
+
+    const businessName = profile?.business_name || 'Payment Rescue';
+
     // Get the SMS template
     const { data: template } = await supabase
       .from('sms_templates')
@@ -104,15 +126,6 @@ export async function POST(req: NextRequest) {
       template?.body ||
       `Hi [[name]], just a friendly reminder that invoice #[[number]] for $[[amount]] was due on [[due_date]]. If you've already paid, ignore this! - [[business_name]]`;
 
-    // Get user's business name
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('business_name')
-      .eq('id', userId)
-      .single();
-
-    const businessName = profile?.business_name || 'Payment Rescue';
-
     // Replace placeholders
     const message = templateBody
       .replace(/\[\[name\]\]/g, invoice.customers.name || 'there')
@@ -125,21 +138,11 @@ export async function POST(req: NextRequest) {
       .replace(/\[\[business_name\]\]/g, businessName)
       .replace(/\[\[pay_link\]\]/g, '');
 
-    // Parse API key (format: username:password)
-    const [username, password] = MM_API_KEY.split(':');
-
-    if (!username || !password) {
-      return NextResponse.json(
-        { error: 'SMS provider not configured correctly. Please contact support.' },
-        { status: 500 }
-      );
-    }
-
     // Send SMS
-    const result = await sendViaMobileMessage(username, password, {
+    const result = await sendViaMobileMessage(MM_USERNAME, MM_PASSWORD, {
       to: invoice.customers.phone,
       message,
-      sender: MM_DEFAULT_SENDER,
+      sender,
       customRef: `inv_${invoice.id.slice(0, 8)}_${templateType}`,
     });
 
@@ -170,6 +173,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       messageId,
+      sender,
       result,
     });
   } catch (error: any) {
