@@ -600,10 +600,10 @@ export default function Home() {
               Join hundreds of Australian tradies who are getting their time — and their money — back.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="#" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded text-lg transition shadow-lg shadow-[#533afd]/30">
+              <a href="/signup" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded text-lg transition shadow-lg shadow-[#533afd]/30">
                 Start your free trial
               </a>
-              <a href="#" className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded text-lg transition border border-white/10">
+              <a href="/signup" className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded text-lg transition border border-white/10">
                 Talk to us first
               </a>
             </div>
@@ -640,16 +640,16 @@ export default function Home() {
             <div>
               <h4 className="font-medium text-white mb-3 text-sm">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-white/40 hover:text-white/70 transition">About</a></li>
-                <li><a href="#" className="text-white/40 hover:text-white/70 transition">Blog</a></li>
-                <li><a href="#" className="text-white/40 hover:text-white/70 transition">Contact</a></li>
+                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">About</a></li>
+                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Blog</a></li>
+                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Contact</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-medium text-white mb-3 text-sm">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-white/40 hover:text-white/70 transition">Privacy Policy</a></li>
-                <li><a href="#" className="text-white/40 hover:text-white/70 transition">Terms of Service</a></li>
+                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Privacy Policy</a></li>
+                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Terms of Service</a></li>
               </ul>
             </div>
           </div>
