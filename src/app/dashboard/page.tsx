@@ -23,13 +23,6 @@ interface Settings {
   has_mobile_message_key: boolean;
 }
 
-constdefaultTemplates = {
-  initial: "Hi [[name]], just a friendly reminder that invoice #[[number]] for $[[amount]] was due on [[due_date]]. If you've already paid, ignore this! - [[business_name]]",
-  follow_up_1: "Hey [[name]], following up on invoice #[[number]] for $[[amount]] — it's now overdue. Could you please arrange payment? - [[business_name]]",
-  follow_up_2: "[[name]], invoice #[[number]] for $[[amount]] is now well overdue. This is our final reminder before escalation. - [[business_name]]",
-  final: "[[name]], we need to escalate invoice #[[number]] for $[[amount]]. Please contact us urgently. - [[business_name]]",
-};
-
 export default function DashboardPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
