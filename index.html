@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Rescue — Get Paid Faster, Chase Less | SMS Payment Reminders for Australian Tradies</title>
+  <meta name="description" content="Payment Rescue sends automatic SMS payment reminders when your invoices go overdue. Built for Australian tradies and service businesses. Connect Xero or Square. Free beta access.">
+  <meta name="keywords" content="payment reminders Australia, SMS invoice chasing, tradie payment tool, Xero SMS reminders, Square payment reminders, get paid faster, late payment solution, Australian small business">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://paymentrescue.com.au">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Payment Rescue — Get Paid Faster, Chase Less">
+  <meta property="og:description" content="Automatic SMS payment reminders for Australian tradies. Connect Xero or Square. Free beta access.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://paymentrescue.com.au">
+  
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Payment Rescue",
+    "description": "SMS payment reminders for Australian tradies and service businesses",
+    "url": "https://paymentrescue.com.au",
+    "founder": {
+      "@type": "Person",
+      "name": "Tyson Kaye",
+      "description": "Nunukul/Quandamooka founder building AI-powered payment solutions for Australian trades"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "AU"
+    },
+    "sameAs": []
+  }
+  </script>
+  
+  <!-- Structured Data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "How does Payment Rescue work?", "acceptedAnswer": {"@type": "Answer", "text": "Connect your Xero or Square account. Payment Rescue automatically detects overdue invoices and sends SMS payment reminders at 7, 14, and 21 days overdue. You track everything in a simple dashboard."}},
+      {"@type": "Question", "name": "What does Payment Rescue cost?", "acceptedAnswer": {"@type": "Answer", "text": "Beta testers get free access for one month. After that, pricing will be $29-59/month depending on invoice volume. Month-to-month, no lock-in."}},
+      {"@type": "Question", "name": "Will my clients know the SMS is automated?", "acceptedAnswer": {"@type": "Answer", "text": "No. The SMS messages sound like they're from you. You set the tone — friendly, firm, or somewhere in between. Your clients simply receive a text from your business."}},
+      {"@type": "Question", "name": "Which tools does Payment Rescue connect to?", "acceptedAnswer": {"@type": "Answer", "text": "Currently Xero and Square. We're adding Stripe and QuickBooks. If you use another tool, contact us and we'll prioritise the integration."}},
+      {"@type": "Question", "name": "Is Payment Rescue just another invoicing tool?", "acceptedAnswer": {"@type": "Answer", "text": "No. Invoicing tools CREATE invoices. Payment Rescue CHASES them. We work WITH your existing tools — you keep using Xero or Square, we handle the automated follow-up."}},
+      {"@type": "Question", "name": "When will Payment Rescue be available?", "acceptedAnswer": {"@type": "Answer", "text": "We're launching our beta in June 2026. First 10 users get free access. Join the waitlist to secure your spot."}}
+    ]
+  }
+  </script>
+  
+  <!-- Structured Data: Product -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Payment Rescue",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "29",
+      "priceCurrency": "AUD"
+    },
+    "description": "SMS payment reminders for Australian tradies and service businesses. Automates invoice follow-up via SMS."
+  }
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #080c14; --navy: #0d1b2a; --slate: #4a5568; --muted: #718096;
+      --line: #e2e8f0; --bg: #f8fafc; --card: #ffffff;
+      --blue: #2563eb; --blue-dark: #1d4ed8; --blue-light: #eff6ff;
+      --green: #16a34a; --green-light: #f0fdf4;
+      --amber: #d97706; --amber-light: #fffbeb;
+      --red: #dc2626; --red-light: #fef2f2;
+      --radius: 12px; --shadow: 0 1px 3px rgba(0,0,0,.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img { max-width: 100%; height: auto; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    
+    /* Layout */
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+    .section-label { text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--blue); margin-bottom: 8px; }
+    .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
+    .section-sub { font-size: 18px; color: var(--slate); max-width: 600px; }
+    
+    /* Nav */
+    nav { background: var(--card); border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); background: rgba(255,255,255,.9); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-weight: 800; font-size: 20px; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo:hover { text-decoration: none; }
+    .badge { background: var(--blue); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--slate); }
+    .nav-cta { background: var(--blue); color: #fff !important; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+    .nav-cta:hover { background: var(--blue-dark); text-decoration: none; }
+    .mobile-menu { display: none; font-size: 24px; background: none; border: none; cursor: pointer; }
+    
+    /* Hero */
+    .hero { padding: 80px 0 60px; text-align: center; }
+    .hero h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 900; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 20px; }
+    .hero h1 .highlight { color: var(--blue); }
+    .hero p { font-size: clamp(16px, 2.5vw, 20px); color: var(--slate); max-width: 640px; margin: 0 auto 32px; }
+    .hero-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; max-width: 480px; margin: 0 auto 16px; }
+    .hero-form input { flex: 1; min-width: 220px; padding: 16px 20px; border: 2px solid var(--line); border-radius: var(--radius); font-size: 16px; font-family: inherit; transition: border-color .2s; }
+    .hero-form input:focus { border-color: var(--blue); outline: none; }
+    .hero-form button { padding: 16px 28px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; transition: background .2s; }
+    .hero-form button:hover { background: var(--blue-dark); }
+    .trust-row { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 32px; flex-wrap: wrap; }
+    .trust-item { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    
+    /* Stats */
+    .stats { background: var(--navy); padding: 48px 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 900; color: #fff; line-height: 1.1; }
+    .stat-label { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 4px; }
+    
+    /* Problem */
+    .problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 48px; }
+    .problem-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; transition: box-shadow .2s; }
+    .problem-card:hover { box-shadow: var(--shadow-lg); }
+    .problem-card .icon { font-size: 32px; margin-bottom: 16px; }
+    .problem-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .problem-card p { font-size: 15px; color: var(--slate); }
+    
+    /* Solution / How it works */
+    .solution { background: var(--blue-light); }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 48px; }
+    .step { text-align: center; }
+    .step-num { width: 56px; height: 56px; background: var(--blue); color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+    .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--slate); max-width: 220px; margin: 0 auto; }
+    
+    /* Features */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .feature { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; transition: box-shadow .2s; }
+    .feature:hover { box-shadow: var(--shadow-lg); }
+    .feature .icon { font-size: 28px; margin-bottom: 12px; }
+    .feature h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .feature p { font-size: 14px; color: var(--slate); }
+    
+    /* Social Proof */
+    .social-proof { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .testimonial { background: var(--bg); border-radius: var(--radius); padding: 28px; border: 1px solid var(--line); }
+    .testimonial .stars { color: #f59e0b; font-size: 16px; margin-bottom: 12px; }
+    .testimonial p { font-size: 15px; font-style: italic; margin-bottom: 16px; }
+    .testimonial .author { font-weight: 700; font-size: 14px; }
+    .testimonial .role { font-size: 13px; color: var(--muted); }
+    .placeholder-note { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); font-style: italic; }
+    
+    /* Pricing */
+    .pricing { background: var(--bg); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .pricing-card { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 32px; text-align: center; position: relative; transition: box-shadow .2s; }
+    .pricing-card:hover { box-shadow: var(--shadow-lg); }
+    .pricing-card.featured { border-color: var(--blue); }
+    .pricing-card .tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--blue); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .pricing-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .pricing-card .price { font-size: 42px; font-weight: 900; margin: 16px 0; }
+    .pricing-card .price span { font-size: 16px; font-weight: 500; color: var(--muted); }
+    .pricing-card ul { list-style: none; text-align: left; margin: 24px 0; }
+    .pricing-card ul li { padding: 8px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .pricing-card ul li::before { content: "✓"; color: var(--green); font-weight: 700; }
+    .pricing-card .btn { display: block; width: 100%; padding: 14px; border-radius: var(--radius); font-weight: 600; font-size: 15px; text-align: center; }
+    .pricing-card .btn-primary { background: var(--blue); color: #fff; }
+    .pricing-card .btn-outline { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+    
+    /* FAQ */
+    .faq { background: var(--card); }
+    .faq-list { max-width: 720px; margin: 48px auto 0; }
+    .faq-item { border-bottom: 1px solid var(--line); padding: 28px 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item h3 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+    .faq-item p { font-size: 15px; color: var(--slate); line-height: 1.7; }
+    
+    /* CTA */
+    .cta { background: var(--navy); padding: 80px 0; text-align: center; }
+    .cta h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: #fff; margin-bottom: 16px; }
+    .cta p { font-size: 18px; color: rgba(255,255,255,.7); max-width: 520px; margin: 0 auto 32px; }
+    .cta-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; max-width: 480px; margin: 0 auto; }
+    .cta-form input { flex: 1; min-width: 220px; padding: 16px 20px; border: 2px solid rgba(255,255,255,.2); border-radius: var(--radius); font-size: 16px; font-family: inherit; background: rgba(255,255,255,.1); color: #fff; }
+    .cta-form input::placeholder { color: rgba(255,255,255,.5); }
+    .cta-form input:focus { border-color: #fff; outline: none; }
+    .cta-form button { padding: 16px 28px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
+    
+    /* Footer */
+    footer { padding: 40px 0; border-top: 1px solid var(--line); text-align: center; }
+    footer .links { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+    footer .links a { font-size: 14px; color: var(--slate); }
+    footer p { font-size: 13px; color: var(--muted); }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .section { padding: 48px 0; }
+      .hero { padding: 48px 0 40px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .testimonials { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+      .nav-links { display: none; }
+      .mobile-menu { display: block; }
+      .stat-num { font-size: 28px; }
+    }
+    @media (max-width: 480px) {
+      .wrap { padding: 0 16px; }
+      .hero h1 { font-size: 32px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SKIP LINK (Accessibility) -->
+<a href="#main" class="skip-link" style="position:absolute;top:-40px;left:0;background:var(--blue);color:#fff;padding:8px;z-index:1000;">Skip to main content</a>
+
+<!-- NAV -->
+<nav role="navigation" aria-label="Main navigation">
+  <div class="wrap">
+    <a href="#" class="logo" aria-label="Payment Rescue home">💳 Payment Rescue <span class="badge">BETA</span></a>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#cta" class="nav-cta">Get Early Access</a>
+    </div>
+    <button class="mobile-menu" aria-label="Open menu" onclick="alert('Menu coming soon')">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main id="main">
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="wrap">
+      <h1 id="hero-heading">Stop chasing money.<br>Start <span class="highlight">getting paid</span>.</h1>
+      <p>Payment Rescue sends automatic SMS reminders when your invoices go overdue. Sounds like you, not a debt collector. Built for Australian tradies and service businesses.</p>
+      <form class="hero-form" action="#" method="POST" aria-label="Join the beta waitlist">
+        <input type="email" placeholder="Enter your email" required aria-label="Email address">
+        <button type="submit">Get Early Access →</button>
+      </form>
+      <div class="trust-row">
+        <span class="trust-item">✓ Free for first 10 beta users</span>
+        <span class="trust-item">✓ No lock-in</span>
+        <span class="trust-item">✓ Works with Xero & Square</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats" aria-label="Key statistics">
+    <div class="wrap">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-num">58%</div>
+          <div class="stat-label">of Aussie small businesses experience late payments</div>
+        </div>
+        <div>
+          <div class="stat-num">$13B</div>
+          <div class="stat-label">lost to late payments every year in Australia</div>
+        </div>
+        <div>
+          <div class="stat-num">$53K</div>
+          <div class="stat-label">average unpaid invoices per small business</div>
+        </div>
+        <div>
+          <div class="stat-num">98%</div>
+          <div class="stat-label">SMS open rate vs 20% for email</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="problem section" aria-labelledby="problem-heading">
+    <div class="wrap">
+      <p class="section-label" id="problem-heading">The Problem</p>
+      <h2 class="section-title">Late payments are killing your business</h2>
+      <p class="section-sub">You did the work. You sent the invoice. Now you're waiting, stressing, and sending awkward texts. It doesn't have to be this way.</p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="icon" aria-hidden="true">😤</div>
+          <h3>Awkward follow-ups</h3>
+          <p>You feel guilty chasing money you're already owed. Every text feels pushy. But you have bills to pay too.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon" aria-hidden="true">⏰</div>
+          <h3>Wasted time</h3>
+          <p>26 hours a year chasing invoices. That's $2,000+ of your productive time spent on collections instead of actual work.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon" aria-hidden="true">💸</div>
+          <h3>Cash flow stress</h3>
+          <p>One late payment can mess up your whole month. Materials, wages, rent — all waiting on someone else's timeline.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon" aria-hidden="true">📱</div>
+          <h3>No system</h3>
+          <p>You're relying on memory and awkward texts. No process. No automation. Just hope and discomfort.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="solution section" id="how-it-works" aria-labelledby="solution-heading">
+    <div class="wrap">
+      <p class="section-label" id="solution-heading">How It Works</p>
+      <h2 class="section-title">Set it and forget it</h2>
+      <p class="section-sub">Connect your existing tools, set your reminder tone, and let Payment Rescue chase your invoices for you.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" aria-hidden="true">1</div>
+          <h3>Connect</h3>
+          <p>Link your Xero or Square account. Takes 2 minutes.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" aria-hidden="true">2</div>
+          <h3>Set your tone</h3>
+          <p>Choose how firm or friendly your reminders sound.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" aria-hidden="true">3</div>
+          <h3>Automate</h3>
+          <p>SMS reminders go out at 7, 14, and 21 days overdue.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" aria-hidden="true">4</div>
+          <h3>Get paid</h3>
+          <p>Track payments in your dashboard. No more awkward texts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features section" id="features" aria-labelledby="features-heading">
+    <div class="wrap">
+      <p class="section-label" id="features-heading">Features</p>
+      <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="icon" aria-hidden="true">💬</div>
+          <h3>SMS-first reminders</h3>
+          <p>98% of SMS messages get opened. Your clients will actually see the reminder.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">🎨</div>
+          <h3>Your tone, not ours</h3>
+          <p>Reminders sound like you wrote them. Professional, not corporate.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">📊</div>
+          <h3>Payment dashboard</h3>
+          <p>See who's paid, who's overdue, and who needs a nudge.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">🔗</div>
+          <h3>Works with your tools</h3>
+          <p>Connects to Xero, Square, and Stripe. No rip-and-replace.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">⚡</div>
+          <h3>3-step sequence</h3>
+          <p>Friendly → Firm → Final notice. Escalates automatically.</p>
+        </div>
+        <div class="feature">
+          <div class="icon" aria-hidden="true">🇦🇺</div>
+          <h3>Built for Australia</h3>
+          <p>Designed for Australian tradies. Local Australian company.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing section" id="pricing" aria-labelledby="pricing-heading">
+    <div class="wrap">
+      <p class="section-label" id="pricing-heading">Pricing</p>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub" style="margin: 0 auto 48px; text-align: center;">No hidden fees. No lock-in. Cancel anytime.</p>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Starter</h3>
+          <p style="color: var(--muted); font-size: 14px;">For solo tradies</p>
+          <div class="price">$29<span>/mo</span></div>
+          <ul>
+            <li>Up to 50 invoices/month</li>
+            <li>SMS reminders (3-step)</li>
+            <li>Xero or Square connection</li>
+            <li>Basic dashboard</li>
+            <li>Email support</li>
+          </ul>
+          <a href="#cta" class="btn btn-outline">Get Started</a>
+        </div>
+        <div class="pricing-card featured">
+          <span class="tag">Most Popular</span>
+          <h3>Pro</h3>
+          <p style="color: var(--muted); font-size: 14px;">For growing businesses</p>
+          <div class="price">$59<span>/mo</span></div>
+          <ul>
+            <li>Unlimited invoices</li>
+            <li>SMS + email reminders</li>
+            <li>Xero, Square + Stripe</li>
+            <li>Advanced dashboard</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="#cta" class="btn btn-primary">Get Started</a>
+        </div>
+        <div class="pricing-card">
+          <h3>Growth</h3>
+          <p style="color: var(--muted); font-size: 14px;">For teams & high volume</p>
+          <div class="price">$99<span>/mo</span></div>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>Multi-user access</li>
+            <li>Dispute evidence packs</li>
+            <li>Cash flow insights</li>
+            <li>Phone support</li>
+          </ul>
+          <a href="#cta" class="btn btn-outline">Get Started</a>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 32px; font-size: 14px; color: var(--muted);">Beta testers get free access for the first month on any plan.</p>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section class="social-proof section" aria-labelledby="social-heading">
+    <div class="wrap">
+      <p class="section-label" id="social-heading">Beta Testers Say</p>
+      <h2 class="section-title">Real tradies. Real results.</h2>
+      <div class="testimonials">
+        <div class="testimonial">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <p>"I was spending every Friday afternoon chasing invoices. Now it just... happens. I got paid 2 weeks faster on average."</p>
+          <div class="author">— Beta Tester</div>
+          <div class="role">Landscaper, Gold Coast</div>
+        </div>
+        <div class="testimonial">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <p>"The SMS reminders sound like me, not some robot. My clients actually respond to them. Game changer."</p>
+          <div class="author">— Beta Tester</div>
+          <div class="role">Electrician, Brisbane</div>
+        </div>
+        <div class="testimonial">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <p>"I didn't realise how much time I was wasting on follow-ups until I stopped. Getting that time back is huge."</p>
+          <div class="author">— Beta Tester</div>
+          <div class="role">Plumber, Sydney</div>
+        </div>
+      </div>
+      <p class="placeholder-note">These are placeholder testimonials. Real ones coming from our first beta users.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq section" id="faq" aria-labelledby="faq-heading">
+    <div class="wrap">
+      <p class="section-label" id="faq-heading">FAQ</p>
+      <h2 class="section-title">Common questions</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>How does Payment Rescue work?</h3>
+          <p>Connect your Xero or Square account. Payment Rescue automatically detects overdue invoices and sends SMS reminders at 7, 14, and 21 days. You track everything in a simple dashboard. It takes about 2 minutes to set up.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What does Payment Rescue cost?</h3>
+          <p>Beta testers get free access for one month. After that, Starter is $29/month (up to 50 invoices), Pro is $59/month (unlimited), Growth is $99/month (multi-user + advanced features). Month-to-month, no lock-in.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Will my clients know the SMS is automated?</h3>
+          <p>No. The SMS messages sound like they're from you. You set the tone — friendly, firm, or somewhere in between. Your clients just see a text from your business number.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Which tools does Payment Rescue connect to?</h3>
+          <p>Currently Xero and Square. We're adding Stripe and QuickBooks soon. If you use something else, let us know and we'll prioritise it.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Is Payment Rescue just another invoicing tool?</h3>
+          <p>No. Invoicing tools CREATE invoices. Payment Rescue CHASES them. We work WITH your existing tools — you keep using Xero or Square, we handle the follow-up.</p>
+        </div>
+        <div class="faq-item">
+          <h3>When will Payment Rescue be available?</h3>
+          <p>Beta launches June 2026. First 10 users get free access. Join the waitlist to secure your spot.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="cta" aria-labelledby="cta-heading">
+    <div class="wrap">
+      <h2 id="cta-heading">Ready to stop chasing money?</h2>
+      <p>We're looking for 10 Australian tradies to test Payment Rescue free for one month. No lock-in. No credit card. Just faster payments.</p>
+      <form class="cta-form" action="#" method="POST" aria-label="Join the beta waitlist">
+        <input type="email" placeholder="Enter your email" required aria-label="Email address">
+        <button type="submit">Join the Beta →</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="wrap">
+    <div class="links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:hello@paymentrescue.com.au">Contact</a>
+    </div>
+    <p>© 2026 Payment Rescue. Built in Australia for Australian tradies and service businesses.</p>
+  </div>
+</footer>
+
+</body>
+</html>
