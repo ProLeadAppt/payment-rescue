@@ -25,7 +25,7 @@ export default function Home() {
             <a href="#faq" className="text-sm text-[#64748d] hover:text-[#061b31] transition font-medium">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <a href="#cta" className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-4 py-2 rounded transition shadow-sm">
+            <a href="/signup" className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-4 py-2 rounded transition shadow-sm">
               Start free trial
             </a>
           </div>
@@ -58,7 +58,7 @@ export default function Home() {
               </p>
               
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
-                <a href="#cta" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded text-lg transition shadow-lg shadow-[#533afd]/20 text-center">
+                <a href="/signup" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded text-lg transition shadow-lg shadow-[#533afd]/20 text-center">
                   Start your free trial
                 </a>
                 <a href="#how-it-works" className="w-full sm:w-auto bg-white hover:bg-[#f8f7ff] text-[#533afd] font-medium px-8 py-4 rounded text-lg transition border border-[#b9b9f9] text-center">
@@ -494,7 +494,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a href="#cta" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded transition text-sm">
+                <a href="/signup" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded transition text-sm">
                   Start free trial
                 </a>
               </div>
@@ -520,7 +520,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a href="#cta" className="mt-8 block w-full text-center bg-white hover:bg-white/90 text-[#533afd] font-medium py-3 rounded transition text-sm">
+                <a href="/signup" className="mt-8 block w-full text-center bg-white hover:bg-white/90 text-[#533afd] font-medium py-3 rounded transition text-sm">
                   Start free trial
                 </a>
               </div>
@@ -543,7 +543,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a href="#cta" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded transition text-sm">
+                <a href="/signup" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded transition text-sm">
                   Start free trial
                 </a>
               </div>
@@ -661,7 +661,7 @@ export default function Home() {
 
       {/* Sticky Mobile CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-[#e5edf5] p-4 shadow-lg">
-        <a href="#cta" className="block w-full bg-[#533afd] hover:bg-[#4434d4] text-white font-medium py-3 rounded text-center text-base transition">
+        <a href="/signup" className="block w-full bg-[#533afd] hover:bg-[#4434d4] text-white font-medium py-3 rounded text-center text-base transition">
           Start your free trial
         </a>
       </div>
