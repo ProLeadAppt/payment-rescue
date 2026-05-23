@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -13,13 +13,21 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  // If user is already logged in, redirect to dashboard
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.push('/dashboard');
+    });
+  }, []);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const { data, error: signupError } = await supabase.auth.signUp({
+      // Step 1: Sign up
+      const { data: signupData, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -33,14 +41,39 @@ export default function SignupPage() {
         return;
       }
 
-      if (data?.user) {
+      // Step 2: If we got a session (email confirmation disabled), go straight to dashboard
+      if (signupData?.session) {
         // Update profile with business name
+        if (signupData.user) {
+          await supabase
+            .from('profiles')
+            .update({ business_name: businessName })
+            .eq('id', signupData.user.id);
+        }
+        router.push('/dashboard');
+        return;
+      }
+
+      // Step 3: If no session (email confirmation enabled), try signing in anyway
+      // This works if "Confirm email" is disabled in Supabase settings
+      const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signinError) {
+        // Email confirmation is required — show message but still try to help
+        setSuccess(true);
+        return;
+      }
+
+      // Signed in successfully
+      if (signinData?.user) {
         await supabase
           .from('profiles')
           .update({ business_name: businessName })
-          .eq('id', data.user.id);
-        
-        setSuccess(true);
+          .eq('id', signinData.user.id);
+        router.push('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
@@ -53,20 +86,24 @@ export default function SignupPage() {
     return (
       <div className="min-h-screen bg-[#f8f7ff] flex items-center justify-center px-4">
         <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-[#15be53]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-[#15be53]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          <div className="w-16 h-16 bg-[#f59e0b]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-[#d97706]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
             </svg>
           </div>
           <h2 className="text-2xl font-light text-[#061b31] mb-2">Check your email</h2>
-          <p className="text-[#64748d] text-sm mb-6">
-            We've sent a confirmation link to <strong>{email}</strong>. Click the link to verify your account and get started.
+          <p className="text-[#64748d] text-sm mb-4">
+            We sent a confirmation link to <strong>{email}</strong>. Click it to verify your account.
           </p>
+          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-4">
+            <p className="font-medium text-[#273951] mb-1">💡 Quick fix:</p>
+            <p>After clicking the confirmation link, come back and <strong>sign in</strong> with your email and password.</p>
+          </div>
           <button
             onClick={() => router.push('/login')}
             className="text-[#533afd] text-sm font-medium hover:underline"
           >
-            Already confirmed? Sign in →
+            Go to sign in →
           </button>
         </div>
       </div>
@@ -79,8 +116,8 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#533afd] to-[#7c5cff] flex items-center justify-center mx-auto mb-4">
             <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L14 5V11L8 15L2 11V5L8 1Z" stroke="white" strokeWidth="1.5" fill="none"/>
-              <path d="M8 5V11M5 8H11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M8 1L14 5V11L8 15L2 11V5L8 1Z" stroke="white" strokeWidth="1.5" fill="none" />
+              <path d="M8 5V11M5 8H11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
           <h1 className="text-2xl font-light text-[#061b31]">Create your account</h1>
