@@ -33,7 +33,7 @@ export default function SignupPage() {
           .from('profiles')
           .update({ business_name: businessName })
           .eq('id', session.user.id);
-        router.replace('/dashboard');
+        router.replace('/dashboard?welcome=true');
         return true;
       }
       return false;
@@ -90,7 +90,7 @@ export default function SignupPage() {
             .update({ business_name: businessName })
             .eq('id', signinData.user.id);
         }
-        router.replace('/dashboard');
+        router.replace('/dashboard?welcome=true');
         return;
       }
 

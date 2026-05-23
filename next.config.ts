@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     unoptimized: true,
+  },
+  // Redirect /setup to a setup page
+  async redirects() {
+    return [];
   },
 };
 
