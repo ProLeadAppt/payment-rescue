@@ -19,11 +19,8 @@ interface Invoice {
 interface Settings {
   business_name: string;
   phone: string;
-  mobile_message_sender: string;
-  has_mobile_message_key: boolean;
+  sms_configured: boolean;
 }
-
-export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -47,14 +44,11 @@ export default function DashboardPage() {
   const [settings, setSettings] = useState<Settings>({
     business_name: '',
     phone: '',
-    mobile_message_sender: '',
-    has_mobile_message_key: false,
+    sms_configured: false,
   });
   const [settingsForm, setSettingsForm] = useState({
     business_name: '',
     phone: '',
-    mobile_message_api_key: '',
-    mobile_message_sender: '',
   });
 
   useEffect(() => {
@@ -87,8 +81,6 @@ export default function DashboardPage() {
         setSettingsForm({
           business_name: data.business_name || '',
           phone: data.phone || '',
-          mobile_message_api_key: '',
-          mobile_message_sender: data.mobile_message_sender || '',
         });
       }
     } catch (e) {
@@ -158,11 +150,6 @@ export default function DashboardPage() {
   }
 
   async function handleSendReminder(invoiceId: string, templateType: string = 'initial') {
-    if (!settings.has_mobile_message_key) {
-      setSmsResult({ type: 'error', message: 'Set up Mobile Message in Settings first.' });
-      return;
-    }
-
     setSendingSms(invoiceId);
     setSmsResult(null);
 
@@ -201,7 +188,7 @@ export default function DashboardPage() {
         setShowSettingsModal(false);
         setShowWelcomeModal(false);
         loadSettings();
-        setSmsResult({ type: 'success', message: 'Settings saved! You can now send SMS reminders.' });
+        setSmsResult({ type: 'success', message: 'Settings saved!' });
       } else {
         const data = await res.json();
         setSmsResult({ type: 'error', message: data.error || 'Failed to save settings' });
@@ -289,18 +276,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Mobile Message not configured warning */}
-        {!settings.has_mobile_message_key && (
-          <div className="mb-6 px-4 py-3 rounded-lg text-sm bg-[#f59e0b]/10 text-[#92400e] border border-[#f59e0b]/20 flex items-center justify-between">
-            <span>
-              ⚡ <strong>Almost there!</strong> Connect your Mobile Message API to start sending SMS reminders.{' '}
-              <button onClick={() => setShowSettingsModal(true)} className="underline font-medium">
-                Set up now →
-              </button>
-            </span>
-          </div>
-        )}
-
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
@@ -346,12 +321,14 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-[#061b31] mb-2">No invoices yet</h3>
-              <p className="text-[#64748d] text-sm mb-4">Add your first invoice to get started with automated reminders.</p>
+              <p className="text-[#64748d] text-sm mb-4 max-w-sm mx-auto">
+                Add your first invoice with a customer phone number, then send an SMS reminder with one tap.
+              </p>
               <button
                 onClick={() => setShowAddModal(true)}
                 className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-6 py-2 rounded-lg transition"
               >
-                + Add Invoice
+                + Add Your First Invoice
               </button>
             </div>
           ) : (
@@ -439,68 +416,45 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Welcome Modal — shown on first signup */}
+      {/* Welcome Modal — simple onboarding */}
       {showWelcomeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-lg w-full">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-[#533afd]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🎉</span>
-              </div>
-              <h3 className="text-xl font-medium text-[#061b31] mb-2">Welcome to Payment Rescue!</h3>
-              <p className="text-sm text-[#64748d]">One last step — connect your SMS provider to start sending payment reminders.</p>
+          <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
+            <div className="w-16 h-16 bg-[#533afd]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🎉</span>
             </div>
+            <h3 className="text-xl font-medium text-[#061b31] mb-2">Welcome to Payment Rescue!</h3>
+            <p className="text-sm text-[#64748d] mb-6">
+              You're ready to start getting paid faster. SMS reminders are connected and working.
+            </p>
 
-            <div className="bg-[#f8f7ff] rounded-lg p-4 mb-6">
-              <h4 className="text-sm font-medium text-[#273951] mb-2">📱 Mobile Message Setup</h4>
+            <div className="bg-[#f8f7ff] rounded-lg p-4 mb-6 text-left">
+              <h4 className="text-sm font-medium text-[#273951] mb-2">How it works:</h4>
               <ol className="text-sm text-[#64748d] space-y-1.5 list-decimal list-inside">
-                <li>Go to <a href="https://app.mobilemessage.com.au" target="_blank" rel="noopener noreferrer" className="text-[#533afd] underline">app.mobilemessage.com.au</a></li>
-                <li>Sign up free (50 free SMS credits)</li>
-                <li>Go to Settings → API → Create New API Key</li>
-                <li>Copy the username:password and paste below</li>
+                <li>Add an invoice with a customer phone number</li>
+                <li>Tap the <strong>📱 SMS</strong> button to send a reminder</li>
+                <li>Your customer gets a friendly text message</li>
               </ol>
             </div>
 
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[#273951] mb-1">API Key (username:password)</label>
-                <input
-                  type="text"
-                  value={settingsForm.mobile_message_api_key}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, mobile_message_api_key: e.target.value })}
-                  placeholder="username:password"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#273951] mb-1">Sender ID <span className="text-[#64748d] font-normal">(your business name, max 11 chars)</span></label>
-                <input
-                  type="text"
-                  value={settingsForm.mobile_message_sender}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, mobile_message_sender: e.target.value })}
-                  placeholder="e.g. PayRescue"
-                  maxLength={11}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowWelcomeModal(false)}
-                  className="flex-1 px-4 py-3 rounded-lg border border-[#e5edf5] text-[#64748d] text-sm font-medium hover:bg-[#f8f7ff] transition"
-                >
-                  Skip for now
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium py-3 rounded-lg transition"
-                >
-                  Connect & Start
-                </button>
-              </div>
-            </form>
+            {/* Optional: set business name */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#273951] mb-1 text-left">Your business name <span className="text-[#64748d] font-normal">(optional)</span></label>
+              <input
+                type="text"
+                value={settingsForm.business_name}
+                onChange={(e) => setSettingsForm({ ...settingsForm, business_name: e.target.value })}
+                placeholder="e.g. Smith Landscaping"
+                className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
+              />
+            </div>
+
+            <button
+              onClick={handleSaveSettings}
+              className="w-full bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium py-3 rounded-lg transition"
+            >
+              Let's Go →
+            </button>
           </div>
         </div>
       )}
@@ -585,61 +539,29 @@ export default function DashboardPage() {
       )}
 
       {/* Settings Modal */}
-      {showSettingsModal && !showWelcomeModal && (
+      {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-md w-full">
             <h3 className="text-lg font-medium text-[#061b31] mb-4">Settings</h3>
 
-            <form onSubmit={handleSaveSettings} className="space-y-6">
+            <form onSubmit={handleSaveSettings} className="space-y-4">
               <div>
-                <h4 className="text-sm font-medium text-[#273951] mb-3">Business Info</h4>
-                <div>
-                  <label className="block text-sm text-[#64748d] mb-1">Business name</label>
-                  <input
-                    type="text"
-                    value={settingsForm.business_name}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, business_name: e.target.value })}
-                    placeholder="e.g. Smith Landscaping"
-                    className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
-                  />
-                </div>
+                <label className="block text-sm font-medium text-[#273951] mb-1">Business name</label>
+                <input
+                  type="text"
+                  value={settingsForm.business_name}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, business_name: e.target.value })}
+                  placeholder="e.g. Smith Landscaping"
+                  className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
+                />
               </div>
 
-              <div className="border-t border-[#e5edf5] pt-6">
-                <h4 className="text-sm font-medium text-[#273951] mb-1">Mobile Message SMS</h4>
-                <p className="text-xs text-[#64748d] mb-3">
-                  Get your API credentials from{' '}
-                  <a href="https://app.mobilemessage.com.au" target="_blank" rel="noopener noreferrer" className="text-[#533afd] underline">
-                    app.mobilemessage.com.au
-                  </a>{' '}
-                  → Settings → API. Free account includes 50 SMS credits.
-                </p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm text-[#64748d] mb-1">
-                      API Key <span className="text-[#64748d]">(username:password)</span>
-                    </label>
-                    <input
-                      type="password"
-                      value={settingsForm.mobile_message_api_key}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, mobile_message_api_key: e.target.value })}
-                      placeholder={settings.has_mobile_message_key ? '•••••••• (configured)' : 'username:password'}
-                      className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-[#64748d] mb-1">
-                      Sender ID <span className="text-[#64748d]">(your business name, max 11 chars)</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={settingsForm.mobile_message_sender}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, mobile_message_sender: e.target.value })}
-                      placeholder="e.g. SmithLand"
-                      maxLength={11}
-                      className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
-                    />
-                  </div>
+              <div className="pt-2">
+                <div className="flex items-center gap-2 text-sm text-[#108c3d] bg-[#15be53]/10 px-3 py-2 rounded-lg">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  SMS reminders connected and ready
                 </div>
               </div>
 
@@ -655,7 +577,7 @@ export default function DashboardPage() {
                   type="submit"
                   className="flex-1 bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium py-3 rounded-lg transition"
                 >
-                  Save Settings
+                  Save
                 </button>
               </div>
             </form>

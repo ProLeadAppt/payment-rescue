@@ -15,22 +15,14 @@ export async function GET() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('business_name, phone, mobile_message_sender')
-      .eq('id', session.user.id)
-      .single();
-
-    // Don't return the full API key, just whether it's configured
-    const { data: keyCheck } = await supabase
-      .from('profiles')
-      .select('mobile_message_api_key')
+      .select('business_name, phone')
       .eq('id', session.user.id)
       .single();
 
     return NextResponse.json({
       business_name: profile?.business_name || '',
       phone: profile?.phone || '',
-      mobile_message_sender: profile?.mobile_message_sender || '',
-      has_mobile_message_key: !!keyCheck?.mobile_message_api_key,
+      sms_configured: !!process.env.MOBILE_MESSAGE_API_KEY,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -50,13 +42,11 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { business_name, phone, mobile_message_api_key, mobile_message_sender } = body;
+    const { business_name, phone } = body;
 
     const updateData: any = {};
     if (business_name !== undefined) updateData.business_name = business_name;
     if (phone !== undefined) updateData.phone = phone;
-    if (mobile_message_api_key !== undefined) updateData.mobile_message_api_key = mobile_message_api_key;
-    if (mobile_message_sender !== undefined) updateData.mobile_message_sender = mobile_message_sender;
     updateData.updated_at = new Date().toISOString();
 
     const { error } = await supabase

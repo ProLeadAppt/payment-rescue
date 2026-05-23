@@ -3,17 +3,14 @@ import { createServerClient } from '@/lib/supabase';
 
 const MOBILE_MESSAGE_API = 'https://api.mobilemessage.com.au/v1/messages';
 
-interface SendSMSRequest {
-  to: string;
-  message: string;
-  sender?: string;
-  customRef?: string;
-}
+// Server-side Mobile Message credentials (shared across all users)
+const MM_API_KEY = process.env.MOBILE_MESSAGE_API_KEY || '';
+const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_DEFAULT_SENDER || 'PayRescue';
 
 async function sendViaMobileMessage(
   username: string,
   password: string,
-  payload: SendSMSRequest
+  payload: { to: string; message: string; sender: string; customRef?: string }
 ) {
   const auth = Buffer.from(`${username}:${password}`).toString('base64');
 
@@ -22,7 +19,7 @@ async function sendViaMobileMessage(
       {
         to: payload.to.startsWith('0') ? `61${payload.to.slice(1)}` : payload.to,
         message: payload.message,
-        sender: payload.sender || 'PayRescue',
+        sender: payload.sender,
         custom_ref: payload.customRef || '',
       },
     ],
@@ -49,6 +46,13 @@ async function sendViaMobileMessage(
 // POST /api/sms/send — send an SMS reminder
 export async function POST(req: NextRequest) {
   try {
+    if (!MM_API_KEY) {
+      return NextResponse.json(
+        { error: 'SMS provider not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const supabase = createServerClient();
 
     // Get current user
@@ -61,20 +65,6 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
-
-    // Get user's Mobile Message credentials
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('mobile_message_api_key, mobile_message_sender, business_name')
-      .eq('id', userId)
-      .single();
-
-    if (!profile?.mobile_message_api_key) {
-      return NextResponse.json(
-        { error: 'Mobile Message not configured. Add your API key in Settings.' },
-        { status: 400 }
-      );
-    }
 
     const { invoiceId, templateType = 'initial' } = await req.json();
 
@@ -114,22 +104,34 @@ export async function POST(req: NextRequest) {
       template?.body ||
       `Hi [[name]], just a friendly reminder that invoice #[[number]] for $[[amount]] was due on [[due_date]]. If you've already paid, ignore this! - [[business_name]]`;
 
+    // Get user's business name
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('business_name')
+      .eq('id', userId)
+      .single();
+
+    const businessName = profile?.business_name || 'Payment Rescue';
+
     // Replace placeholders
     const message = templateBody
       .replace(/\[\[name\]\]/g, invoice.customers.name || 'there')
       .replace(/\[\[number\]\]/g, invoice.invoice_number || invoice.id.slice(0, 8))
-      .replace(/\[\[amount\]\]/g, `$${invoice.amount.toFixed(2)}`)
-      .replace(/\[\[due_date\]\]/g, invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('en-AU') : 'N/A')
-      .replace(/\[\[business_name\]\]/g, profile.business_name || 'Payment Rescue')
-      .replace(/\[\[pay_link\]\]/g, ''); // TODO: generate payment link
+      .replace(/\[\[amount\]\]/g, `$${Number(invoice.amount).toFixed(2)}`)
+      .replace(
+        /\[\[due_date\]\]/g,
+        invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('en-AU') : 'N/A'
+      )
+      .replace(/\[\[business_name\]\]/g, businessName)
+      .replace(/\[\[pay_link\]\]/g, '');
 
     // Parse API key (format: username:password)
-    const [username, password] = profile.mobile_message_api_key.split(':');
+    const [username, password] = MM_API_KEY.split(':');
 
     if (!username || !password) {
       return NextResponse.json(
-        { error: 'Invalid API key format. Use username:password' },
-        { status: 400 }
+        { error: 'SMS provider not configured correctly. Please contact support.' },
+        { status: 500 }
       );
     }
 
@@ -137,7 +139,7 @@ export async function POST(req: NextRequest) {
     const result = await sendViaMobileMessage(username, password, {
       to: invoice.customers.phone,
       message,
-      sender: profile.mobile_message_sender || 'PayRescue',
+      sender: MM_DEFAULT_SENDER,
       customRef: `inv_${invoice.id.slice(0, 8)}_${templateType}`,
     });
 
