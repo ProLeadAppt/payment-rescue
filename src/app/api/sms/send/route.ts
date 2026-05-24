@@ -3,12 +3,13 @@ import { createServerClient } from '@/lib/supabase-server';
 
 const MOBILE_MESSAGE_API = 'https://api.mobilemessage.com.au/v1/messages';
 
-// App-level Mobile Message credentials (shared pool)
-// MOBILE_MESSAGE_API_KEY format: "username:password" (base64 encoded at runtime)
+// App-level Mobile Message credentials
 const MM_API_KEY = process.env.MOBILE_MESSAGE_API_KEY || '';
-const MM_USERNAME = MM_API_KEY.includes(':') ? MM_API_KEY.split(':')[0] : '';
-const MM_PASSWORD = MM_API_KEY.includes(':') ? MM_API_KEY.split(':')[1] || '' : '';
-const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_SENDER || 'PayRescue';
+const MM_USERNAME = MM_API_KEY.split(':')[0] || '';
+// Handle passwords that may contain ':' — rejoin everything after the first split
+const MM_PASSWORD = MM_API_KEY.includes(':') ? MM_API_KEY.split(':').slice(1).join(':') : '';
+// Default sender: use the shared number from Mobile Message (61485900166), or override via env
+const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_SENDER || '61485900166';
 
 async function sendViaMobileMessage(
   username: string,
@@ -20,7 +21,9 @@ async function sendViaMobileMessage(
   const body: any = {
     messages: [
       {
-        to: payload.to.startsWith('0') ? `61${payload.to.slice(1)}` : payload.to,
+        to: payload.to.replace(/[^0-9+]/g, '').startsWith('0')
+          ? `61${payload.to.replace(/[^0-9+]/g, '').slice(1)}`
+          : payload.to.replace(/[^0-9+]/g, '').replace(/^\+/, ''),
         message: payload.message,
         sender: payload.sender,
         custom_ref: payload.customRef || '',

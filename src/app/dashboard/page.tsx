@@ -20,6 +20,7 @@ interface Settings {
   business_name: string;
   phone: string;
   sms_configured: boolean;
+  sms_sender: string;
 }
 
 type OnboardingStep = 'welcome' | 'add_invoice' | 'send_sms' | 'complete';
@@ -775,7 +776,7 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-xs text-[#64748d]">
                   {settings.sms_configured
-                    ? 'SMS reminders are ready to send.'
+                    ? `SMS reminders are ready to send. Messages will come from ${settings.sms_sender || 'your shared number'}.`
                     : 'Contact support to enable SMS reminders.'}
                 </p>
               </div>

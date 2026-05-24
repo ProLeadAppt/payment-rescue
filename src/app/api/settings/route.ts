@@ -23,6 +23,7 @@ export async function GET() {
       business_name: profile?.business_name || '',
       phone: profile?.phone || '',
       sms_configured: !!process.env.MOBILE_MESSAGE_API_KEY,
+      sms_sender: process.env.MOBILE_MESSAGE_SENDER || '61485900166',
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
