@@ -37,6 +37,19 @@ export default function LoginPage() {
         return;
       }
 
+      // Sync session to server-side cookies (so middleware recognizes it)
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session) {
+        await fetch('/api/auth/sync-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_token: sessionData.session.access_token,
+            refresh_token: sessionData.session.refresh_token,
+          }),
+        });
+      }
+
       router.push('/dashboard');
       router.refresh();
     } catch (err: any) {

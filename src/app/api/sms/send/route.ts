@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 
 const MOBILE_MESSAGE_API = 'https://api.mobilemessage.com.au/v1/messages';
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
 
     const {
       data: { session },

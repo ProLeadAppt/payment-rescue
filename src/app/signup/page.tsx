@@ -52,7 +52,7 @@ export default function SignupPage() {
         return;
       }
 
-      // If we got a session (email confirmation OFF), go straight to dashboard
+      // If we got a session (email confirmation OFF), sync to cookies and go to dashboard
       if (data?.session) {
         // Update profile
         if (data.user) {
@@ -61,6 +61,17 @@ export default function SignupPage() {
             .update({ business_name: businessName })
             .eq('id', data.user.id);
         }
+
+        // Sync session to server-side cookies (so middleware recognizes it)
+        await fetch('/api/auth/sync-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          }),
+        });
+
         router.replace('/dashboard?welcome=true');
         return;
       }

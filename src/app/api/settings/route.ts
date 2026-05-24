@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 
 // GET /api/settings — get user settings
 export async function GET() {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -36,7 +36,7 @@ export async function GET() {
 // PUT /api/settings — update user settings
 export async function PUT(req: NextRequest) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();
