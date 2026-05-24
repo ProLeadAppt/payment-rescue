@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -13,8 +13,7 @@ export default function SignupPage() {
   const [businessName, setBusinessName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'form' | 'confirm' | 'redirecting'>('form');
-  const checkingRef = useRef(false);
+  const [success, setSuccess] = useState(false);
 
   // If user is already logged in, redirect to dashboard
   useEffect(() => {
@@ -23,43 +22,13 @@ export default function SignupPage() {
     });
   }, []);
 
-  // Poll for session after signup (handles email confirmation redirect)
-  useEffect(() => {
-    if (step !== 'confirm' || checkingRef.current) return;
-    
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase
-          .from('profiles')
-          .update({ business_name: businessName })
-          .eq('id', session.user.id);
-        router.replace('/dashboard?welcome=true');
-        return true;
-      }
-      return false;
-    };
-
-    checkingRef.current = true;
-    checkSession().then((found) => {
-      if (!found) {
-        const interval = setInterval(async () => {
-          const found = await checkSession();
-          if (found) clearInterval(interval);
-        }, 3000);
-        setTimeout(() => clearInterval(interval), 120000);
-      }
-    });
-  }, [step, businessName, router]);
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      // Step 1: Sign up
-      const { data: signupData, error: signupError } = await supabase.auth.signUp({
+      const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -71,81 +40,41 @@ export default function SignupPage() {
       if (signupError) {
         // If user already exists, try signing in
         if (signupError.message?.toLowerCase().includes('already') || signupError.message?.toLowerCase().includes('exists')) {
-          const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          if (!signinError && signinData?.session) {
-            router.replace('/dashboard?welcome=true');
+          const { error: signinError } = await supabase.auth.signInWithPassword({ email, password });
+          if (!signinError) {
+            router.replace('/dashboard');
             return;
           }
-          setError('Account already exists. Try signing in instead.');
+          setError('Account already exists. Try signing in.');
           return;
         }
         setError(signupError.message);
         return;
       }
 
-      // Step 2: If signUp returned a session (email confirmation OFF), use it
-      if (signupData?.session) {
-        // Update profile with business name
-        if (signupData.user) {
+      // If we got a session (email confirmation OFF), go straight to dashboard
+      if (data?.session) {
+        // Update profile
+        if (data.user) {
           await supabase
             .from('profiles')
             .update({ business_name: businessName })
-            .eq('id', signupData.user.id);
+            .eq('id', data.user.id);
         }
         router.replace('/dashboard?welcome=true');
         return;
       }
 
-      // Step 3: Try signing in anyway (edge case handling)
-      const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (!signinError && signinData?.session) {
-        if (signinData.user && signupData?.user) {
-          await supabase
-            .from('profiles')
-            .update({ business_name: businessName })
-            .eq('id', signinData.user.id);
-        }
-        router.replace('/dashboard?welcome=true');
-        return;
-      }
-
-      // Step 4: Email confirmation required — show confirmation screen
-      setStep('confirm');
-      checkingRef.current = false;
-
+      // Email confirmation required
+      setSuccess(true);
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
-      // If account was created but something else failed, let them log in
-      if (err.message?.includes('session') || err.message?.includes('cookie')) {
-        setError('Account created! Try signing in.');
-      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle the redirect back from email confirmation
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('confirmed') === 'true') {
-      const savedEmail = params.get('email');
-      const savedBusiness = params.get('business') || '';
-      if (savedEmail) {
-        setEmail(savedEmail);
-        setBusinessName(savedBusiness);
-      }
-    }
-  }, []);
-
-  if (step === 'confirm') {
+  if (success) {
     return (
       <div className="min-h-screen bg-[#f8f7ff] flex items-center justify-center px-4">
         <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
@@ -155,13 +84,9 @@ export default function SignupPage() {
             </svg>
           </div>
           <h2 className="text-2xl font-light text-[#061b31] mb-2">Check your email</h2>
-          <p className="text-[#64748d] text-sm mb-4">
+          <p className="text-[#64748d] text-sm mb-6">
             We sent a confirmation link to <strong className="text-[#061b31]">{email}</strong>. Click it to verify your account.
           </p>
-          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-4">
-            <p className="font-medium text-[#273951] mb-1">💡 After clicking the link:</p>
-            <p>Come back to this tab — we'll automatically sign you in.</p>
-          </div>
           <div className="flex items-center justify-center gap-2 text-sm text-[#64748d]">
             <div className="w-4 h-4 border-2 border-[#533afd] border-t-transparent rounded-full animate-spin" />
             Waiting for confirmation...
