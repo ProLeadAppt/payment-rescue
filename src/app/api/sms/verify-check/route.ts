@@ -17,6 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Code required' }, { status: 400 });
     }
 
+    // Validate code format (4 digits)
+    if (!/^\d{4}$/.test(code)) {
+      return NextResponse.json({ error: 'Verification code must be 4 digits' }, { status: 400 });
+    }
+
     // Get the stored code
     const { data: profile } = await supabase
       .from('profiles')
