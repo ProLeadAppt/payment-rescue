@@ -23,7 +23,7 @@ async function sendViaMobileMessage(
       {
         to: payload.to.replace(/[^0-9+]/g, '').startsWith('0')
           ? `61${payload.to.replace(/[^0-9+]/g, '').slice(1)}`
-          : payload.to.replace(/[^0-9+]/g, '').replace(/^\+/, ''),
+          : payload.to.replace(/[^0-9+]/g, '').replace(/^\\+/, ''),
         message: payload.message,
         sender: payload.sender,
         custom_ref: payload.customRef || '',
@@ -141,15 +141,15 @@ export async function POST(req: NextRequest) {
 
     // Replace placeholders
     const message = templateBody
-      .replace(/\[\[name\]\]/g, invoice.customers.name || 'there')
-      .replace(/\[\[number\]\]/g, invoice.invoice_number || invoice.id.slice(0, 8))
-      .replace(/\[\[amount\]\]/g, `$${Number(invoice.amount).toFixed(2)}`)
+      .replace(/\\[\\[name\\]\\]/g, invoice.customers.name || 'there')
+      .replace(/\\[\\[number\\]\\]/g, invoice.invoice_number || invoice.id.slice(0, 8))
+      .replace(/\\[\\[amount\\]\\]/g, `$${Number(invoice.amount).toFixed(2)}`)
       .replace(
-        /\[\[due_date\]\]/g,
+        /\\[\\[due_date\\]\\]/g,
         invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('en-AU') : 'N/A'
       )
-      .replace(/\[\[business_name\]\]/g, businessName)
-      .replace(/\[\[pay_link\]\]/g, '');
+      .replace(/\\[\\[business_name\\]\\]/g, businessName)
+      .replace(/\\[\\[pay_link\\]\\]/g, '');
 
     // Send SMS
     const result = await sendViaMobileMessage(MM_USERNAME, MM_PASSWORD, {
