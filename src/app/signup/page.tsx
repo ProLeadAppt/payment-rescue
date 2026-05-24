@@ -95,13 +95,6 @@ export default function SignupPage() {
             .eq('id', data.user.id);
         }
 
-        // Send verification SMS
-        await fetch('/api/sms/verify-send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: formattedMobile }),
-        });
-
         await fetch('/api/auth/sync-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
