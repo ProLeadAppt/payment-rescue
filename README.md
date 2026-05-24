@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Internal Dashboard
 
-## Getting Started
+There is an internal dashboard available at `/internal/dashboard` that provides a view of the Payment Rescue operations, including cron job status, live app checks, and reports.
 
-First, run the development server:
+## Access Control
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The internal dashboard is protected by Supabase authentication and can be restricted to a specific email address via the `INTERNAL_DASHBOARD_ALLOWED_EMAIL` environment variable.
+
+To allow access only to your email, set the following in your Vercel environment variables:
+
+```
+INTERNAL_DASHBOARD_ALLOWED_EMAIL=your@email.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If the variable is not set, any authenticated user can access the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The dashboard endpoint runs the `payment_rescue_ops_dashboard.py` script to generate a fresh HTML report and returns it as the response.
 
-## Learn More
+The script checks the health of the Payment Rescue live app, lists cron jobs, and shows recent reports.
 
-To learn more about Next.js, take a look at the following resources:
+## Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To test the dashboard locally, you can run the script directly:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+python3 scripts/payment_rescue_ops_dashboard.py
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This will print the path to the generated HTML file.
