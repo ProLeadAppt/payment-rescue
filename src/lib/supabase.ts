@@ -1,26 +1,31 @@
 import { createBrowserClient, createServerClient as createSSRServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
 
-// Lazy browser client — only created in browser, not during SSR
-let _browserClient: ReturnType<typeof createBrowserClient> | null = null;
+// Browser client — created lazily to avoid SSR issues
+let browserClient: SupabaseClient | null = null;
 
-export function getBrowserClient() {
-  if (!_browserClient) {
-    _browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
+function getBrowserClient(): SupabaseClient {
+  if (!browserClient) {
+    browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
   }
-  return _browserClient;
+  return browserClient;
 }
 
-// For direct import compatibility — but prefer getBrowserClient() in client components
-export const supabase = typeof window !== 'undefined' ? getBrowserClient() : null as any;
+// Export as a proxy that lazily creates the client
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const client = getBrowserClient();
+    return (client as any)[prop];
+  },
+});
 
-// Server client for API routes — reads/writes cookies via Next.js cookies()
+// Server client for API routes
 export async function createServerClient() {
   const cookieStore = await cookies();
-
   return createSSRServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -32,7 +37,7 @@ export async function createServerClient() {
             cookieStore.set(name, value, options);
           });
         } catch {
-          // Server Component — middleware handles session refresh
+          // Server Component
         }
       },
     },
