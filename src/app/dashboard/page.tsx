@@ -19,8 +19,10 @@ interface Invoice {
 interface Settings {
   business_name: string;
   phone: string;
+  mobile: string;
   sms_configured: boolean;
   sms_sender: string;
+  mobile_verified: boolean;
 }
 
 type OnboardingStep = 'welcome' | 'add_invoice' | 'send_sms' | 'complete';
@@ -57,8 +59,10 @@ export default function DashboardPage() {
   const [settings, setSettings] = useState<Settings>({
     business_name: '',
     phone: '',
+    mobile: '',
     sms_configured: false,
     sms_sender: '',
+    mobile_verified: false,
   });
 
   const [settingsForm, setSettingsForm] = useState({
@@ -275,7 +279,7 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/sms/verify-check', {
         method: 'POST',
-        headers: { 'Content-Type': application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: verifyCode }),
       });
       const data = await res.json();
