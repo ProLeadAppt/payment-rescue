@@ -51,6 +51,7 @@ export default function DashboardPage() {
     business_name: '',
     phone: '',
     sms_configured: false,
+    sms_sender: '',
   });
 
   const [settingsForm, setSettingsForm] = useState({
