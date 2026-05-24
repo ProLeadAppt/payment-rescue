@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Structured data
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -75,7 +74,7 @@ const faqSchema = {
       name: "Is Payment Rescue just another invoicing tool?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "No. Invoicing tools CREATE invoices. Payment Rescue CHASES them. We work WITH your existing tools — you keep using Xero or Square, we handle the automated follow-up.",
+        text: "No. Invoicing tools CREATE invoices. Payment Rescue CHASES them. We work WITH your existing tools — you keep using Xero or Square, we handle the follow-up.",
       },
     },
     {
@@ -132,7 +131,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200" role="navigation" aria-label="Main navigation">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="#" className="flex items-center gap-2 text-xl font-bold text-blue-600 no-underline hover:no-underline">
-            💳 Payment Rescue
+            Payment Rescue
             <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-md font-semibold">BETA</span>
           </a>
           <div className="hidden md:flex items-center gap-6">
@@ -142,6 +141,9 @@ export default function Home() {
             <a href="#faq" className="text-sm font-medium text-gray-600 hover:text-gray-900">FAQ</a>
             <a href="#cta" className="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 no-underline">Get Early Access</a>
           </div>
+          <button className="md:hidden text-2xl text-gray-600" aria-label="Open menu">
+            ☰
+          </button>
         </div>
       </nav>
 
@@ -212,13 +214,12 @@ export default function Home() {
             <p className="text-lg text-gray-600 max-w-2xl mb-12">You did the work. You sent the invoice. Now you're waiting, stressing, and sending awkward texts. It doesn't have to be this way.</p>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icon: "😤", title: "Awkward follow-ups", desc: "You feel guilty chasing money you're already owed. Every text feels pushy. But you have bills to pay too." },
-                { icon: "⏰", title: "Wasted time", desc: "26 hours a year chasing invoices. That's $2,000+ of your productive time spent on collections instead of actual work." },
-                { icon: "💸", title: "Cash flow stress", desc: "One late payment can mess up your whole month. Materials, wages, rent — all waiting on someone else's timeline." },
-                { icon: "📱", title: "No system", desc: "You're relying on memory and awkward texts. No process. No automation. Just hope and discomfort." },
+                { title: "Awkward follow-ups", desc: "You feel guilty chasing money you're already owed. Every text feels pushy. But you have bills to pay too." },
+                { title: "Wasted time", desc: "26 hours a year chasing invoices. That's $2,000+ of your productive time spent on collections instead of actual work." },
+                { title: "Cash flow stress", desc: "One late payment can mess up your whole month. Materials, wages, rent — all waiting on someone else's timeline." },
+                { title: "No system", desc: "You're relying on memory and awkward texts. No process. No automation. Just hope and discomfort." },
               ].map((item, i) => (
                 <div key={i} className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-                  <div className="text-3xl mb-4" aria-hidden="true">{item.icon}</div>
                   <h3 className="text-lg font-bold mb-2">{item.title}</h3>
                   <p className="text-gray-600">{item.desc}</p>
                 </div>
@@ -257,15 +258,14 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-extrabold mb-12">Everything you need. Nothing you don't.</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { icon: "💬", title: "SMS-first reminders", desc: "98% of SMS messages get opened. Your clients will actually see the reminder." },
-                { icon: "🎨", title: "Your tone, not ours", desc: "Reminders sound like you wrote them. Professional, not corporate." },
-                { icon: "📊", title: "Payment dashboard", desc: "See who's paid, who's overdue, and who needs a nudge." },
-                { icon: "🔗", title: "Works with your tools", desc: "Connects to Xero, Square, and Stripe. No rip-and-replace." },
-                { icon: "⚡", title: "3-step sequence", desc: "Friendly → Firm → Final notice. Escalates automatically." },
-                { icon: "🇦🇺", title: "Built for Australia", desc: "Designed for Australian tradies. Local Australian company." },
+                { title: "SMS-first reminders", desc: "98% of SMS messages get opened. Your clients will actually see the reminder." },
+                { title: "Your tone, not ours", desc: "Reminders sound like you wrote them. Professional, not corporate." },
+                { title: "Payment dashboard", desc: "See who's paid, who's overdue, and who needs a nudge." },
+                { title: "Works with your tools", desc: "Connects to Xero, Square, and Stripe. No rip-and-replace." },
+                { title: "3-step sequence", desc: "Friendly → Firm → Final notice. Escalates automatically." },
+                { title: "Built for Australia", desc: "Designed for Australian tradies. Local Australian company." },
               ].map((feat, i) => (
                 <div key={i} className="bg-white border border-gray-200 rounded-2xl p-7 hover:shadow-xl transition-shadow">
-                  <div className="text-2xl mb-3" aria-hidden="true">{feat.icon}</div>
                   <h3 className="text-base font-bold mb-2">{feat.title}</h3>
                   <p className="text-gray-600 text-sm">{feat.desc}</p>
                 </div>
