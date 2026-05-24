@@ -13,14 +13,13 @@ export default function SignupPage() {
   const [businessName, setBusinessName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'form' | 'confirm'>('form');
-  const [devCode, setDevCode] = useState('');
+  const [step, setStep] = useState<'form' | 'confirm' | 'redirecting'>('form');
   const checkingRef = useRef(false);
 
   // If user is already logged in, redirect to dashboard
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.replace('/dashboard');
+      if (session) router.replace('/dashboard?welcome=true');
     });
   }, []);
 
@@ -41,17 +40,13 @@ export default function SignupPage() {
       return false;
     };
 
-    // Check immediately
     checkingRef.current = true;
     checkSession().then((found) => {
       if (!found) {
-        // Poll every 3 seconds for 2 minutes
         const interval = setInterval(async () => {
           const found = await checkSession();
           if (found) clearInterval(interval);
         }, 3000);
-        
-        // Stop after 2 minutes
         setTimeout(() => clearInterval(interval), 120000);
       }
     });
@@ -74,19 +69,44 @@ export default function SignupPage() {
       });
 
       if (signupError) {
+        // If user already exists, try signing in
+        if (signupError.message?.toLowerCase().includes('already') || signupError.message?.toLowerCase().includes('exists')) {
+          const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (!signinError && signinData?.session) {
+            router.replace('/dashboard?welcome=true');
+            return;
+          }
+          setError('Account already exists. Try signing in instead.');
+          return;
+        }
         setError(signupError.message);
         return;
       }
 
-      // Step 2: Try immediate sign-in (works if email confirmation is disabled)
+      // Step 2: If signUp returned a session (email confirmation OFF), use it
+      if (signupData?.session) {
+        // Update profile with business name
+        if (signupData.user) {
+          await supabase
+            .from('profiles')
+            .update({ business_name: businessName })
+            .eq('id', signupData.user.id);
+        }
+        router.replace('/dashboard?welcome=true');
+        return;
+      }
+
+      // Step 3: Try signing in anyway (edge case handling)
       const { data: signinData, error: signinError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (!signinError && signinData?.session) {
-        // Email confirmation NOT required — go straight to dashboard
-        if (signinData.user) {
+        if (signinData.user && signupData?.user) {
           await supabase
             .from('profiles')
             .update({ business_name: businessName })
@@ -96,11 +116,16 @@ export default function SignupPage() {
         return;
       }
 
-      // Step 3: Email confirmation required — show confirmation screen
+      // Step 4: Email confirmation required — show confirmation screen
       setStep('confirm');
-      checkingRef.current = false; // Will trigger the polling effect
+      checkingRef.current = false;
+
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
+      // If account was created but something else failed, let them log in
+      if (err.message?.includes('session') || err.message?.includes('cookie')) {
+        setError('Account created! Try signing in.');
+      }
     } finally {
       setLoading(false);
     }
@@ -111,7 +136,6 @@ export default function SignupPage() {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('confirmed') === 'true') {
-      // User came back from email confirmation — try signing in
       const savedEmail = params.get('email');
       const savedBusiness = params.get('business') || '';
       if (savedEmail) {
@@ -134,9 +158,9 @@ export default function SignupPage() {
           <p className="text-[#64748d] text-sm mb-4">
             We sent a confirmation link to <strong className="text-[#061b31]">{email}</strong>. Click it to verify your account.
           </p>
-          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-6">
+          <div className="bg-[#f8f7ff] rounded-lg p-4 text-left text-sm text-[#64748d] mb-4">
             <p className="font-medium text-[#273951] mb-1">💡 After clicking the link:</p>
-            <p>Come back to this tab — we'll automatically sign you in and take you to the dashboard.</p>
+            <p>Come back to this tab — we'll automatically sign you in.</p>
           </div>
           <div className="flex items-center justify-center gap-2 text-sm text-[#64748d]">
             <div className="w-4 h-4 border-2 border-[#533afd] border-t-transparent rounded-full animate-spin" />

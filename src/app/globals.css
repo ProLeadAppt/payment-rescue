@@ -22,7 +22,7 @@ body {
   line-height: 1.6;
 }
 
-/* Stripe-style selection */
+/* Selection */
 ::selection {
   background: #533afd;
   color: #ffffff;
@@ -54,4 +54,247 @@ details[open] > summary svg {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ============================================
+   SCROLL-DRIVEN ANIMATIONS (CSS-only, no JS)
+   Performance: uses transform/opacity only
+   ============================================ */
+
+/* Base reveal state — elements start hidden */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delays for children */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+
+/* Slide from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale up (for cards/numbers) */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ============================================
+   CSS SCROLL-DRIVEN ANIMATIONS (native)
+   Falls back to JS intersection observer
+   ============================================ */
+@supports (animation-timeline: view()) {
+  .scroll-reveal {
+    animation: fadeUp linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scroll-fade {
+    animation: fadeIn linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 50%;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* ============================================
+   MICRO-INTERACTIONS
+   ============================================ */
+
+/* Subtle hover lift for cards */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(50, 50, 93, 0.15),
+              0 8px 16px -8px rgba(0, 0, 0, 0.08);
+}
+
+/* Button press effect */
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f8f7ff 25%, #eeeaff 50%, #f8f7ff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Pulse dot */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Floating orbs — GPU-accelerated, no layout shift */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(12px, -16px) scale(1.02); }
+  66% { transform: translate(-8px, 8px) scale(0.98); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-16px, 12px) scale(1.03); }
+}
+
+.orb-float-1 {
+  animation: float-slow 20s ease-in-out infinite;
+  will-change: transform;
+}
+.orb-float-2 {
+  animation: float-medium 15s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Counter number animation */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Nav backdrop blur transition */
+.nav-blur {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.nav-blur.scrolled {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(229, 237, 245, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================
+   MOBILE MENU
+   ============================================ */
+
+.mobile-menu-overlay {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.mobile-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.mobile-menu-overlay.closed {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.mobile-menu-panel {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mobile-menu-panel.open {
+  transform: translateX(0);
+}
+.mobile-menu-panel.closed {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }
