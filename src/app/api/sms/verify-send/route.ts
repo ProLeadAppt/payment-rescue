@@ -57,6 +57,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'SMS provider not configured' }, { status: 500 });
     }
 
+    const supabase = await createServerClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { phone } = await req.json();
 
     if (!phone) {
@@ -65,19 +72,16 @@ export async function POST(req: NextRequest) {
 
     const code = generateCode();
 
-    // Store the code in Supabase (we'll verify it later)
-    // For now, use a simple in-memory approach or store in profiles
-    const supabase = await createServerClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        verification_code: code,
+        verification_code_expires: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      })
+      .eq('id', session.user.id);
 
-    if (session?.user) {
-      await supabase
-        .from('profiles')
-        .update({
-          verification_code: code,
-          verification_code_expires: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 mins
-        })
-        .eq('id', session.user.id);
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
     // Send the code via SMS
