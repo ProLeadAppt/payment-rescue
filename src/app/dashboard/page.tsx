@@ -22,6 +22,8 @@ interface Settings {
   sms_configured: boolean;
 }
 
+type OnboardingStep = 'welcome' | 'add_invoice' | 'send_sms' | 'complete';
+
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -30,8 +32,11 @@ export default function DashboardPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [sendingSms, setSendingSms] = useState<string | null>(null);
   const [smsResult, setSmsResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('welcome');
+  const [totalRemindersSent, setTotalRemindersSent] = useState(0);
 
   const [newInvoice, setNewInvoice] = useState({
     customer_name: '',
@@ -59,8 +64,21 @@ export default function DashboardPage() {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search.includes('welcome=true')) {
       setShowWelcomeModal(true);
+      setOnboardingStep('welcome');
     }
   }, []);
+
+  // Track onboarding progress
+  useEffect(() => {
+    if (invoices.length === 0 && !showWelcomeModal) {
+      setOnboardingStep('add_invoice');
+    }
+    const total = invoices.reduce((sum, inv) => sum + (inv.reminder_count || 0), 0);
+    setTotalRemindersSent(total);
+    if (total > 0 && onboardingStep !== 'complete') {
+      setOnboardingStep('complete');
+    }
+  }, [invoices, showWelcomeModal]);
 
   async function checkUser() {
     const {
@@ -166,7 +184,11 @@ export default function DashboardPage() {
       const data = await res.json();
 
       if (res.ok) {
+        const newTotal = totalRemindersSent + 1;
         setSmsResult({ type: 'success', message: `SMS sent successfully! (ID: ${data.messageId || 'N/A'})` });
+        if (newTotal === 1) {
+          setShowSuccessModal(true);
+        }
         loadInvoices(user.id);
       } else {
         setSmsResult({ type: 'error', message: data.error || 'Failed to send SMS' });
@@ -260,6 +282,28 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
+        {/* Onboarding Progress Bar */}
+        {onboardingStep !== 'complete' && (
+          <div className="mb-6 bg-white rounded-lg border border-[#e5edf5] p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-[#273951]">Getting Started</span>
+              <span className="text-xs text-[#64748d]">
+                {onboardingStep === 'welcome' ? 'Step 1 of 3' : onboardingStep === 'add_invoice' ? 'Step 2 of 3' : 'Step 3 of 3'}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <div className={`h-1.5 flex-1 rounded-full ${onboardingStep !== 'welcome' ? 'bg-[#15be53]' : 'bg-[#533afd]'}`} />
+              <div className={`h-1.5 flex-1 rounded-full ${onboardingStep === 'add_invoice' ? 'bg-[#533afd]' : onboardingStep === 'complete' || totalRemindersSent > 0 ? 'bg-[#15be53]' : 'bg-[#e5edf5]'}`} />
+              <div className={`h-1.5 flex-1 rounded-full ${totalRemindersSent > 0 ? 'bg-[#15be53]' : 'bg-[#e5edf5]'}`} />
+            </div>
+            <div className="flex justify-between mt-1.5">
+              <span className={`text-[10px] ${onboardingStep !== 'welcome' ? 'text-[#108c3d]' : 'text-[#533afd]'}`}>✓ Welcome</span>
+              <span className={`text-[10px] ${onboardingStep === 'add_invoice' ? 'text-[#533afd]' : onboardingStep === 'complete' || totalRemindersSent > 0 ? 'text-[#108c3d]' : 'text-[#64748d]'}`}>Add Invoice</span>
+              <span className={`text-[10px] ${totalRemindersSent > 0 ? 'text-[#108c3d]' : 'text-[#64748d]'}`}>Send SMS</span>
+            </div>
+          </div>
+        )}
+
         <div className="mb-8">
           <h1 className="text-2xl font-medium text-[#061b31] mb-1">
             {settings.business_name ? `Welcome, ${settings.business_name}` : 'Dashboard'}
@@ -321,32 +365,70 @@ export default function DashboardPage() {
           {loading ? (
             <div className="p-12 text-center text-[#64748d]">Loading...</div>
           ) : invoices.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-[#f8f7ff] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-[#b9b9f9]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-[#061b31] mb-2">No invoices yet</h3>
-              <p className="text-[#64748d] text-sm mb-4 max-w-sm mx-auto">
-                Add your first invoice with a customer phone number, then send an SMS reminder with one tap.
-              </p>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-6 py-2 rounded-lg transition"
-              >
-                + Add Your First Invoice
-              </button>
+            <div className="p-8 md:p-12 text-center">
+              {onboardingStep === 'add_invoice' ? (
+                /* Onboarding Step 2: Guided Add Invoice */
+                <>
+                  <div className="w-16 h-16 bg-[#533afd]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">📝</span>
+                  </div>
+                  <h3 className="text-lg font-medium text-[#061b31] mb-2">
+                    Step 2: Add your first invoice
+                  </h3>
+                  <p className="text-[#64748d] text-sm mb-6 max-w-sm mx-auto">
+                    Enter a customer name, amount, and their phone number. You can add a due date too if you want.
+                  </p>
+                  <div className="bg-[#f8f7ff] rounded-lg p-6 mb-6 max-w-sm mx-auto text-left">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-[#533afd] text-white flex items-center justify-center text-sm font-bold shrink-0">1</div>
+                      <p className="text-sm text-[#273951]">Click the button below to open the invoice form</p>
+                    </div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-[#533afd] text-white flex items-center justify-center text-sm font-bold shrink-0">2</div>
+                      <p className="text-sm text-[#273951]">Fill in customer name, amount, and phone number</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#533afd] text-white flex items-center justify-center text-sm font-bold shrink-0">3</div>
+                      <p className="text-sm text-[#273951]">Hit "Add Invoice" — you're ready to send your first SMS!</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-8 py-3 rounded-lg transition inline-flex items-center gap-2"
+                  >
+                    <span>📝</span> Add Your First Invoice
+                  </button>
+                </>
+              ) : (
+                /* Fallback empty state (post-onboarding or returning user) */
+                <>
+                  <div className="w-16 h-16 bg-[#f8f7ff] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg
+                      className="w-8 h-8 text-[#b9b9f9]"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-[#061b31] mb-2">No invoices yet</h3>
+                  <p className="text-[#64748d] text-sm mb-4 max-w-sm mx-auto">
+                    Add your first invoice with a customer phone number, then send an SMS reminder with one tap.
+                  </p>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-6 py-2 rounded-lg transition"
+                  >
+                    + Add Your First Invoice
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -488,10 +570,10 @@ export default function DashboardPage() {
             </div>
 
             <button
-              onClick={() => handleSaveSettings()}
+              onClick={() => { handleSaveSettings(); }}
               className="w-full bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium py-3 rounded-lg transition"
             >
-              Let's Go →
+              {settingsForm.business_name ? `Let's Go, ${settingsForm.business_name} →` : "Let's Go →"}
             </button>
 
             <button
@@ -500,6 +582,49 @@ export default function DashboardPage() {
             >
               Skip for now
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* First SMS Success Celebration Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg border border-[#e5edf5] p-8 max-w-md w-full text-center">
+            <div className="w-16 h-16 bg-[#15be53]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🚀</span>
+            </div>
+            <h3 className="text-xl font-medium text-[#061b31] mb-2">You sent your first SMS!</h3>
+            <p className="text-sm text-[#64748d] mb-6">
+              Nice one! Your customer just got a friendly reminder. This is how you start getting paid faster.
+            </p>
+
+            <div className="bg-[#f8f7ff] rounded-lg p-4 mb-6 text-left">
+              <h4 className="text-sm font-medium text-[#273951] mb-2">What's next?</h4>
+              <ul className="text-sm text-[#64748d] space-y-1.5 list-disc list-inside">
+                <li>Add more invoices as they come in</li>
+                <li>Tap <strong>📱 SMS</strong> on any overdue invoice</li>
+                <li>Mark invoices as <strong>Paid</strong> when you get payment</li>
+              </ul>
+            </div>
+
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium py-3 rounded-lg transition"
+            >
+              Got it, let's keep going →
+            </button>
+
+            <div className="mt-4 pt-4 border-t border-[#e5edf5]">
+              <p className="text-xs text-[#64748d] mb-2">Loving Payment Rescue?</p>
+              <a
+                href="https://apps.apple.com/search?term=payment+rescue"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-[#533afd] hover:underline"
+              >
+                ⭐ Leave us a review — it helps other tradies find us
+              </a>
+            </div>
           </div>
         </div>
       )}
