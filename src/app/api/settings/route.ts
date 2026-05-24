@@ -15,18 +15,14 @@ export async function GET() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('business_name, phone, sms_sender_type, own_sender_number, sms_sender_label')
+      .select('business_name, phone')
       .eq('id', session.user.id)
       .single();
 
     return NextResponse.json({
       business_name: profile?.business_name || '',
       phone: profile?.phone || '',
-      sms_sender_type: profile?.sms_sender_type || 'shared',
-      own_sender_number: profile?.own_sender_number || '',
-      sms_sender_label: profile?.sms_sender_label || '',
-      sms_configured: !!(process.env.MOBILE_MESSAGE_USERNAME && process.env.MOBILE_MESSAGE_PASSWORD),
-      default_sender: process.env.MOBILE_MESSAGE_DEFAULT_SENDER || 'PayRescue',
+      sms_configured: !!process.env.MOBILE_MESSAGE_API_KEY,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -46,14 +42,11 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { business_name, phone, sms_sender_type, own_sender_number, sms_sender_label } = body;
+    const { business_name, phone } = body;
 
     const updateData: any = {};
     if (business_name !== undefined) updateData.business_name = business_name;
     if (phone !== undefined) updateData.phone = phone;
-    if (sms_sender_type !== undefined) updateData.sms_sender_type = sms_sender_type;
-    if (own_sender_number !== undefined) updateData.own_sender_number = own_sender_number;
-    if (sms_sender_label !== undefined) updateData.sms_sender_label = sms_sender_label;
     updateData.updated_at = new Date().toISOString();
 
     const { error } = await supabase

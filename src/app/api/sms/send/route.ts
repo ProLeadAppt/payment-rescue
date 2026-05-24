@@ -4,9 +4,11 @@ import { createServerClient } from '@/lib/supabase-server';
 const MOBILE_MESSAGE_API = 'https://api.mobilemessage.com.au/v1/messages';
 
 // App-level Mobile Message credentials (shared pool)
-const MM_USERNAME = process.env.MOBILE_MESSAGE_USERNAME || '';
-const MM_PASSWORD = process.env.MOBILE_MESSAGE_PASSWORD || '';
-const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_DEFAULT_SENDER || 'PayRescue';
+// MOBILE_MESSAGE_API_KEY format: "username:password" (base64 encoded at runtime)
+const MM_API_KEY = process.env.MOBILE_MESSAGE_API_KEY || '';
+const MM_USERNAME = MM_API_KEY.includes(':') ? MM_API_KEY.split(':')[0] : '';
+const MM_PASSWORD = MM_API_KEY.includes(':') ? MM_API_KEY.split(':')[1] || '' : '';
+const MM_DEFAULT_SENDER = process.env.MOBILE_MESSAGE_SENDER || 'PayRescue';
 
 async function sendViaMobileMessage(
   username: string,
@@ -91,25 +93,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user's SMS sender preference
+    // Get user's business name
     const { data: profile } = await supabase
       .from('profiles')
-      .select('business_name, sms_sender_type, own_sender_number, sms_sender_label')
+      .select('business_name')
       .eq('id', userId)
       .single();
 
-    // Determine sender
+    // Determine sender — use business name if available (alphanumeric), else default
     let sender = MM_DEFAULT_SENDER;
-    const senderType = profile?.sms_sender_type || 'shared';
-
-    if (senderType === 'own_number' && profile?.own_sender_number) {
-      // User has ported their own number — use it
-      sender = profile.own_sender_number;
-    } else if (senderType === 'business_name' && profile?.business_name) {
-      // Alphanumeric sender ID (business name)
+    if (profile?.business_name) {
       sender = profile.business_name.slice(0, 11); // ACMA max 11 chars
     }
-    // else: use default shared sender
 
     const businessName = profile?.business_name || 'Payment Rescue';
 
