@@ -11,34 +11,69 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  // If user is already logged in, redirect to dashboard
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.replace('/dashboard?welcome=true');
     });
   }, []);
 
+  function formatMobile(input: string): string {
+    const digits = input.replace(/[^0-9]/g, '');
+    // If starts with 0 and is 10 digits, convert to 61 format
+    if (digits.startsWith('0') && digits.length === 10) {
+      return `61${digits.slice(1)}`;
+    }
+    // If starts with 61 and is 11 digits, keep as is
+    if (digits.startsWith('61') && digits.length === 11) {
+      return digits;
+    }
+    return digits;
+  }
+
+  function displayMobile(stored: string): string {
+    // Display 61412345678 as 0412 345 678
+    if (stored.startsWith('61') && stored.length === 11) {
+      const n = stored.slice(2);
+      return `0${n.slice(0, 3)} ${n.slice(3, 6)} ${n.slice(6)}`;
+    }
+    return stored;
+  }
+
+  const isValidMobile = (m: string) => {
+    const digits = m.replace(/[^0-9]/g, '');
+    // Australian: 04XX XXX XXX (10 digits starting with 0) or 614XXXXXXXX (11 digits starting with 61)
+    return (digits.startsWith('04') && digits.length === 10) || (digits.startsWith('614') && digits.length === 11);
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!isValidMobile(mobile)) {
+      setError('Please enter a valid Australian mobile number (e.g. 0412 345 678)');
+      setLoading(false);
+      return;
+    }
+
+    const formattedMobile = formatMobile(mobile);
 
     try {
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { business_name: businessName },
+          data: { business_name: businessName, mobile: formattedMobile },
           emailRedirectTo: `${window.location.origin}/signup?confirmed=true&email=${encodeURIComponent(email)}&business=${encodeURIComponent(businessName)}`,
         },
       });
 
       if (signupError) {
-        // If user already exists, try signing in
         if (signupError.message?.toLowerCase().includes('already') || signupError.message?.toLowerCase().includes('exists')) {
           const { error: signinError } = await supabase.auth.signInWithPassword({ email, password });
           if (!signinError) {
@@ -52,17 +87,21 @@ export default function SignupPage() {
         return;
       }
 
-      // If we got a session (email confirmation OFF), sync to cookies and go to dashboard
       if (data?.session) {
-        // Update profile
         if (data.user) {
           await supabase
             .from('profiles')
-            .update({ business_name: businessName })
+            .update({ business_name: businessName, mobile: formattedMobile })
             .eq('id', data.user.id);
         }
 
-        // Sync session to server-side cookies (so middleware recognizes it)
+        // Send verification SMS
+        await fetch('/api/sms/verify-send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: formattedMobile }),
+        });
+
         await fetch('/api/auth/sync-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -76,7 +115,6 @@ export default function SignupPage() {
         return;
       }
 
-      // Email confirmation required
       setSuccess(true);
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
@@ -143,6 +181,22 @@ export default function SignupPage() {
               required
               className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] outline-none transition text-sm"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#273951] mb-1">
+              Your mobile number <span className="text-[#ea2261]">*</span>
+            </label>
+            <input
+              type="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="0412 345 678"
+              required
+              className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] focus:ring-1 focus:ring-[#533afd] outline-none transition text-sm"
+            />
+            <p className="text-xs text-[#64748d] mt-1">
+              SMS reminders will be sent from this number so customers recognise you.
+            </p>
           </div>
           <div>
             <label className="block text-sm font-medium text-[#273951] mb-1">Password</label>

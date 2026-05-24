@@ -77,13 +77,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'invoiceId required' }, { status: 400 });
     }
 
-    // Get invoice with customer
-    const { data: invoice } = await supabase
+    // Get invoice by UUID or invoice_number
+    console.log('SMS API: looking for invoice', invoiceId, 'for user', userId);
+    const { data: invoice, error: dbError } = await supabase
       .from('invoices')
       .select('*, customers(name, phone)')
-      .eq('id', invoiceId)
+      .or(`id.eq.${invoiceId},invoice_number.eq.${invoiceId}`)
       .eq('user_id', userId)
       .single();
+
+    if (dbError) {
+      console.log('SMS API: DB error', dbError);
+    }
+    console.log('SMS API: found invoice?', !!invoice);
 
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
@@ -96,20 +102,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user's business name
+    // Get user's business name and mobile
     const { data: profile } = await supabase
       .from('profiles')
-      .select('business_name')
+      .select('business_name, mobile, mobile_verified')
       .eq('id', userId)
       .single();
 
-    // Determine sender — use business name if available (alphanumeric), else default
+    // Determine sender priority:
+    // 1. User's own verified mobile (they own it, customers recognise it)
+    // 2. Business name as alphanumeric sender (if 3-11 chars, ACMA compliant)
+    // 3. Fallback to shared number from env
     let sender = MM_DEFAULT_SENDER;
-    if (profile?.business_name) {
-      sender = profile.business_name.slice(0, 11); // ACMA max 11 chars
-    }
-
     const businessName = profile?.business_name || 'Payment Rescue';
+
+    if (profile?.mobile_verified && profile?.mobile) {
+      sender = profile.mobile;
+    } else if (profile?.business_name && profile.business_name.length >= 3 && profile.business_name.length <= 11) {
+      sender = profile.business_name;
+    }
 
     // Get the SMS template
     const { data: template } = await supabase
