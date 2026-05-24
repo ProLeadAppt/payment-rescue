@@ -1,12 +1,10 @@
-import { supabaseServerClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default async function InternalDashboard() {
-  const cookieStore = cookies();
-  const supabase = supabaseServerClient(cookieStore);
+  const supabase = await createServerClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -71,8 +69,8 @@ export default async function InternalDashboard() {
                     job.status === 'success'
                       ? 'bg-green-100 text-green-800'
                       : job.status === 'error'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
                   }`}>
                     {job.status}
                   </span>
@@ -156,10 +154,13 @@ async function getCronJobStatuses() {
 
 async function checkAppHealth() {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     const res = await fetch('https://payment-rescue.vercel.app', {
       method: 'HEAD',
-      timeout: 5000,
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (res.ok) {
       return { ok: true, message: 'Homepage reachable', details: '' };
     } else {
@@ -170,10 +171,26 @@ async function checkAppHealth() {
       };
     }
   } catch (error) {
+    // Narrow error to Error type
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return {
+          ok: false,
+          message: 'Timeout reaching homepage',
+          details: '',
+        };
+      }
+      return {
+        ok: false,
+        message: 'Failed to reach homepage',
+        details: error.message,
+      };
+    }
+    // Fallback for unknown error type
     return {
       ok: false,
       message: 'Failed to reach homepage',
-      details: error.message,
+      details: String(error),
     };
   }
 }
