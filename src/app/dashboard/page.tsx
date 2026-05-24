@@ -293,12 +293,12 @@ export default function DashboardPage() {
             </div>
             <div className="flex gap-2">
               <div className={`h-1.5 flex-1 rounded-full ${onboardingStep !== 'welcome' ? 'bg-[#15be53]' : 'bg-[#533afd]'}`} />
-              <div className={`h-1.5 flex-1 rounded-full ${onboardingStep === 'add_invoice' ? 'bg-[#533afd]' : onboardingStep === 'complete' || totalRemindersSent > 0 ? 'bg-[#15be53]' : 'bg-[#e5edf5]'}`} />
+              <div className={`h-1.5 flex-1 rounded-full ${onboardingStep === 'add_invoice' ? 'bg-[#533afd]' : totalRemindersSent > 0 ? 'bg-[#15be53]' : 'bg-[#e5edf5]'}`} />
               <div className={`h-1.5 flex-1 rounded-full ${totalRemindersSent > 0 ? 'bg-[#15be53]' : 'bg-[#e5edf5]'}`} />
             </div>
             <div className="flex justify-between mt-1.5">
               <span className={`text-[10px] ${onboardingStep !== 'welcome' ? 'text-[#108c3d]' : 'text-[#533afd]'}`}>✓ Welcome</span>
-              <span className={`text-[10px] ${onboardingStep === 'add_invoice' ? 'text-[#533afd]' : onboardingStep === 'complete' || totalRemindersSent > 0 ? 'text-[#108c3d]' : 'text-[#64748d]'}`}>Add Invoice</span>
+              <span className={`text-[10px] ${onboardingStep === 'add_invoice' ? 'text-[#533afd]' : totalRemindersSent > 0 ? 'text-[#108c3d]' : 'text-[#64748d]'}`}>Add Invoice</span>
               <span className={`text-[10px] ${totalRemindersSent > 0 ? 'text-[#108c3d]' : 'text-[#64748d]'}`}>Send SMS</span>
             </div>
           </div>
