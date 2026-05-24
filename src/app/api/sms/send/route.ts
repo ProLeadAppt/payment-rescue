@@ -102,18 +102,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user's business name and mobile
+    // Get user's business name and verified mobile
     const { data: profile } = await supabase
       .from('profiles')
       .select('business_name, mobile, mobile_verified')
       .eq('id', userId)
       .single();
 
-    // Determine sender priority:
-    // 1. User's own verified mobile (they own it, customers recognise it)
-    // 2. Business name as alphanumeric sender (if 3-11 chars, ACMA compliant)
-    // 3. Fallback to shared number from env
+    // Determine sender: verified mobile > business name (alphanumeric) > shared number fallback
     let sender = MM_DEFAULT_SENDER;
+    if (profile?.mobile_verified && profile?.mobile) {
+      // Use their verified mobile number
+      const cleaned = profile.mobile.replace(/[^0-9]/g, '');
+      sender = cleaned.startsWith('0') ? `61${cleaned.slice(1)}` : cleaned;
+    } else if (profile?.business_name) {
+      sender = profile.business_name.slice(0, 11);
+    }
     const businessName = profile?.business_name || 'Payment Rescue';
 
     if (profile?.mobile_verified && profile?.mobile) {

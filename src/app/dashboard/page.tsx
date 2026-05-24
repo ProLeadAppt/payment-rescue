@@ -39,6 +39,13 @@ export default function DashboardPage() {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('welcome');
   const [totalRemindersSent, setTotalRemindersSent] = useState(0);
 
+  // Mobile verification state
+  const [mobileVerified, setMobileVerified] = useState(false);
+  const [showVerifyInput, setShowVerifyInput] = useState(false);
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
+
   const [newInvoice, setNewInvoice] = useState({
     customer_name: '',
     customer_phone: '',
@@ -57,6 +64,7 @@ export default function DashboardPage() {
   const [settingsForm, setSettingsForm] = useState({
     business_name: '',
     phone: '',
+    mobile: '',
   });
 
   useEffect(() => {
@@ -104,7 +112,9 @@ export default function DashboardPage() {
         setSettingsForm({
           business_name: data.business_name || '',
           phone: data.phone || '',
+          mobile: data.mobile || '',
         });
+        setMobileVerified(data.mobile_verified || false);
       }
     } catch (e) {
       console.error('Failed to load settings:', e);
@@ -217,6 +227,7 @@ export default function DashboardPage() {
       body: JSON.stringify({
         business_name: settingsForm.business_name,
         phone: settingsForm.phone,
+        mobile: settingsForm.mobile,
       }),
     });
 
@@ -225,9 +236,60 @@ export default function DashboardPage() {
         ...settings,
         business_name: settingsForm.business_name,
         phone: settingsForm.phone,
+        mobile: settingsForm.mobile,
       });
       setShowSettingsModal(false);
       setShowWelcomeModal(false);
+    }
+  }
+
+  // Send verification code to user's mobile
+  async function handleSendVerification() {
+    if (!settingsForm.mobile) return;
+    setVerifying(true);
+    setVerifyError('');
+    try {
+      const res = await fetch('/api/sms/verify-send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: settingsForm.mobile }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowVerifyInput(true);
+      } else {
+        setVerifyError(data.error || 'Failed to send code');
+      }
+    } catch (e: any) {
+      setVerifyError(e.message || 'Network error');
+    } finally {
+      setVerifying(false);
+    }
+  }
+
+  // Verify the code entered by user
+  async function handleVerifyCode() {
+    if (verifyCode.length !== 4) return;
+    setVerifying(true);
+    setVerifyError('');
+    try {
+      const res = await fetch('/api/sms/verify-check', {
+        method: 'POST',
+        headers: { 'Content-Type': application/json' },
+        body: JSON.stringify({ code: verifyCode }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMobileVerified(true);
+        setShowVerifyInput(false);
+        setVerifyCode('');
+      } else {
+        setVerifyError(data.error || 'Verification failed');
+      }
+    } catch (e: any) {
+      setVerifyError(e.message || 'Network error');
+    } finally {
+      setVerifying(false);
     }
   }
 
@@ -732,7 +794,7 @@ export default function DashboardPage() {
       {/* Settings Modal */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-md w-full">
+          <div className="bg-white rounded-lg border border-[#e5edf5] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-medium text-[#061b31] mb-4">Settings</h3>
             <form onSubmit={handleSaveSettings} className="space-y-4">
               <div>
@@ -749,17 +811,80 @@ export default function DashboardPage() {
                   className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
                 />
               </div>
+
+              {/* Mobile Number + Verification */}
               <div>
-                <label className="block text-sm font-medium text-[#273951] mb-1">Phone</label>
+                <label className="block text-sm font-medium text-[#273951] mb-1">
+                  Your mobile number
+                </label>
+                <p className="text-xs text-[#64748d] mb-2">
+                  SMS reminders will be sent from this number so customers recognise you.
+                </p>
                 <input
                   type="tel"
-                  value={settingsForm.phone}
+                  value={settingsForm.mobile || ''}
                   onChange={(e) =>
-                    setSettingsForm({ ...settingsForm, phone: e.target.value })
+                    setSettingsForm({ ...settingsForm, mobile: e.target.value })
                   }
                   placeholder="e.g. 0412 345 678"
                   className="w-full px-4 py-3 rounded-lg border border-[#e5edf5] text-[#061b31] placeholder-[#64748d] focus:border-[#533afd] outline-none transition text-sm"
                 />
+
+                {/* Verification status */}
+                {settingsForm.mobile && (
+                  <div className="mt-2">
+                    {mobileVerified ? (
+                      <div className="flex items-center gap-2 text-xs text-[#108c3d]">
+                        <span>✓</span>
+                        <span>Verified — SMS will be sent from {settingsForm.mobile}</span>
+                      </div>
+                    ) : showVerifyInput ? (
+                      <div className="mt-2">
+                        <p className="text-xs text-[#64748d] mb-2">
+                          Enter the 4-digit code we sent to {settingsForm.mobile}:
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            maxLength={4}
+                            value={verifyCode}
+                            onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                            placeholder="0000"
+                            className="flex-1 px-4 py-2 rounded-lg border border-[#e5edf5] text-[#061b31] text-center text-lg tracking-widest placeholder-[#64748d] focus:border-[#533afd] outline-none transition"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVerifyCode}
+                            disabled={verifyCode.length !== 4 || verifying}
+                            className="px-4 py-2 rounded-lg bg-[#533afd] text-white text-sm font-medium hover:bg-[#4434d4] transition disabled:opacity-40"
+                          >
+                            {verifying ? '...' : 'Verify'}
+                          </button>
+                        </div>
+                        {verifyError && (
+                          <p className="text-xs text-[#ea2261] mt-1">{verifyError}</p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleSendVerification}
+                          disabled={verifying}
+                          className="mt-2 text-xs text-[#533afd] hover:underline disabled:opacity-40"
+                        >
+                          Resend code
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleSendVerification}
+                        disabled={verifying}
+                        className="mt-2 px-4 py-2 rounded-lg bg-[#533afd]/10 text-[#533afd] text-sm font-medium hover:bg-[#533afd]/20 transition"
+                      >
+                        {verifying ? 'Sending...' : 'Verify this number'}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="bg-[#f8f7ff] rounded-lg p-4 mt-4">
@@ -777,7 +902,9 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-xs text-[#64748d]">
                   {settings.sms_configured
-                    ? `SMS reminders are ready to send. Messages will come from ${settings.sms_sender || 'your shared number'}.`
+                    ? mobileVerified && settingsForm.mobile
+                      ? `SMS will be sent from your number: ${settingsForm.mobile}`
+                      : `SMS will be sent from shared number: ${settings.sms_sender || '61485900166'}. Verify your mobile to send from your own number.`
                     : 'Contact support to enable SMS reminders.'}
                 </p>
               </div>

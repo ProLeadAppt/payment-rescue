@@ -15,13 +15,15 @@ export async function GET() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('business_name, phone')
+      .select('business_name, phone, mobile, mobile_verified')
       .eq('id', session.user.id)
       .single();
 
     return NextResponse.json({
       business_name: profile?.business_name || '',
       phone: profile?.phone || '',
+      mobile: profile?.mobile || '',
+      mobile_verified: profile?.mobile_verified || false,
       sms_configured: !!process.env.MOBILE_MESSAGE_API_KEY,
       sms_sender: process.env.MOBILE_MESSAGE_SENDER || '61485900166',
     });
