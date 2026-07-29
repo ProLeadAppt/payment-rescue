@@ -37,6 +37,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const pathname = request.nextUrl.pathname;
+  const isPrivateRoute = /^\/(dashboard|internal|login|signup)(?:\/|$)/.test(pathname);
+  const isVercelAlias = request.nextUrl.hostname.endsWith('.vercel.app');
+
+  // Private application routes must never appear in search. Vercel's generated
+  // alias serves the same marketing page as the custom domain, so mark the
+  // alias noindex as well and keep www.paymentrescue.com.au as the only
+  // indexable production origin.
+  if (isPrivateRoute || isVercelAlias) {
+    supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+
   return supabaseResponse;
 }
 
