@@ -256,9 +256,11 @@ export default function Home() {
 
               <RevealSection delay={1}>
                 <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-light tracking-[-0.02em] text-[#061b31] leading-[1.05]">
-                  Stop chasing invoices.
+                  Track invoices. Send SMS reminders.
                   <br />
-                  <span className="bg-gradient-to-r from-[#533afd] to-[#7c5cff] bg-clip-text text-transparent gradient-animate">Get back to the work you love.</span>
+                  <span className="bg-gradient-to-r from-[#533afd] to-[#f96bee] bg-clip-text text-transparent gradient-animate">
+                    Keep follow-up in one place.
+                  </span>
                 </h1>
               </RevealSection>
 
@@ -389,9 +391,9 @@ export default function Home() {
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">Dashboard</p>
                 <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
-                  Everything you need.
+                  A clear view of invoice status.
                   <br />
-                  <span className="text-[#64748d]">Nothing you don't.</span>
+                  <span className="text-[#64748d]">Outstanding, paid, and reminder count.</span>
                 </h2>
                 <p className="mt-4 text-lg text-[#64748d] font-light">
                   An illustrative view of how invoices, payment status, due dates, and reminder counts appear in the dashboard.
@@ -447,8 +449,8 @@ export default function Home() {
                           { customer: 'Green Valley Landscaping', amount: '$2,400', due: '5 days ago', status: 'Overdue', statusColor: 'bg-[#ea2261]/10 text-[#ea2261]', reminders: '3 sent' },
                           { customer: 'Summit Property Services', amount: '$1,800', due: '12 days ago', status: 'Overdue', statusColor: 'bg-[#ea2261]/10 text-[#ea2261]', reminders: '2 sent' },
                           { customer: 'Harbor View Dental', amount: '$850', due: 'Due today', status: 'Pending', statusColor: 'bg-[#f59e0b]/10 text-[#d97706]', reminders: '1 sent' },
-                          { customer: 'Northside Mechanics', amount: '$3,200', due: 'Due in 5 days', status: 'Pending', statusColor: 'bg-[#f59e0b]/10 text-[#d97706]', reminders: 'Scheduled' },
-                          { customer: 'Bay Fitness Centre', amount: '$4,200', due: 'Due in 10 days', status: 'Pending', statusColor: 'bg-[#f59e0b]/10 text-[#d97706]', reminders: 'Scheduled' },
+                          { customer: 'Northside Mechanics', amount: '$3,200', due: 'Due in 5 days', status: 'Pending', statusColor: 'bg-[#f59e0b]/10 text-[#d97706]', reminders: 'Not sent' },
+                          { customer: 'Bay Fitness Centre', amount: '$4,200', due: 'Due in 10 days', status: 'Pending', statusColor: 'bg-[#f59e0b]/10 text-[#d97706]', reminders: 'Not sent' },
                         ].map((row, i) => (
                           <tr key={i} className="hover:bg-[#f8f7ff] transition-colors">
                             <td className="px-4 py-3 text-[#061b31]">{row.customer}</td>
