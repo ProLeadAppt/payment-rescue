@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { marketingFaqs } from "@/lib/marketing-content";
 
 export const metadata: Metadata = {
   alternates: {
@@ -18,32 +19,14 @@ const organizationSchema = {
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "How does Payment Rescue work?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Payment Rescue connects to your existing tools (Square, Xero, QuickBooks) and automatically sends SMS reminders to customers with overdue invoices. You set the schedule, we handle the rest.",
-      },
+  mainEntity: marketingFaqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.a,
     },
-    {
-      "@type": "Question",
-      name: "How much does it cost?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Plans start from $29/month with no lock-in contract. All plans include a 14-day free trial.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is it only for tradies?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No! Any Australian small business can use Payment Rescue. It's built for tradies but works for cleaners, landscapers, builders, consultants, and more.",
-      },
-    },
-  ],
+  })),
 };
 
 export default function MarketingLayout({

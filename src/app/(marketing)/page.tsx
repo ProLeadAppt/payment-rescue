@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { marketingFaqs } from '@/lib/marketing-content';
 
 /* ============================================
    INTERSECTION OBSERVER HOOK
@@ -297,28 +297,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== STATS ===== */}
-        <section className="py-14 bg-[#061b31] text-white">
-          <div className="max-w-[1080px] mx-auto px-6">
-            <RevealSection>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center divide-x divide-white/10">
-                {[
-                  { value: '$42K', label: 'Average annual revenue lost per tradie to late payments' },
-                  { value: '54%', label: 'Of invoices paid late by Australian businesses' },
-                  { value: '32 days', label: 'Average payment delay for tradies' },
-                  { value: '5 hrs', label: 'Per week wasted chasing invoices' },
-                ].map((stat, i) => (
-                  <div key={i}>
-                    <div className="text-3xl sm:text-4xl font-light text-white tracking-tight">{stat.value}</div>
-                    <div className="mt-2 text-sm text-white/50 font-light leading-snug">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </RevealSection>
-          </div>
-        </section>
 
-        {/* ===== PROBLEM ===== */}
         <section className="py-20 sm:py-28 bg-white">
           <div className="max-w-[1080px] mx-auto px-6">
             <RevealSection>
@@ -630,86 +609,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== TESTIMONIALS ===== */}
-        <section className="py-20 sm:py-28 bg-[#f8f7ff]">
-          <div className="max-w-[1080px] mx-auto px-6">
-            <RevealSection>
-              <div className="text-center max-w-3xl mx-auto mb-16">
-                <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">What tradies are saying</p>
-                <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
-                  Real results from
-                  <br />
-                  <span className="text-[#64748d]">real businesses</span>
-                </h2>
-              </div>
-            </RevealSection>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                { name: 'Jake M.', role: 'Landscaping, Brisbane', quote: "I was spending 3-4 hours a week chasing invoices. Now it's maybe 30 minutes. The SMS reminders do the awkward part for me. I just got back to doing quotes instead of chasing money.", metric: '75% less time chasing' },
-                { name: 'Sarah K.', role: 'Cleaning Business, Sydney', quote: "My clients actually thank me for the reminders. They're professional but friendly. I've had zero pushback — and my payments come in 40% faster on average.", metric: '40% faster payments' },
-                { name: 'Dave R.', role: 'Plumbing, Melbourne', quote: "Went from 40% of invoices paid late to under 10% in the first month. This thing pays for itself in the first week. I only wish I'd found it sooner.", metric: '30% fewer late payments' },
-              ].map((t, i) => (
-                <RevealSection key={i} delay={i + 1}>
-                  <div className="bg-white p-8 rounded-lg border border-[#e5edf5] shadow-sm h-full flex flex-col">
-                    <div className="flex items-center gap-1 mb-4">
-                      {[...Array(5)].map((_, j) => (
-                        <svg key={j} className="w-4 h-4 text-[#f59e0b]" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <p className="text-[#061b31] leading-relaxed mb-6 text-[15px] flex-1">&ldquo;{t.quote}&rdquo;</p>
-                    <div className="border-t border-[#e5edf5] pt-4">
-                      <div className="font-medium text-[#061b31] text-sm">{t.name}</div>
-                      <div className="text-xs text-[#64748d]">{t.role}</div>
-                      <div className="mt-2 inline-flex items-center gap-1 bg-[#15be53]/10 text-[#108c3d] text-xs font-medium px-2 py-1 rounded">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-                        </svg>
-                        {t.metric}
-                      </div>
-                    </div>
-                  </div>
-                </RevealSection>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ===== TRUST & SECURITY ===== */}
-        <section className="py-16 bg-white">
-          <div className="max-w-[1080px] mx-auto px-6">
-            <RevealSection>
-              <div className="text-center mb-10">
-                <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">Security & trust</p>
-                <h2 className="text-2xl sm:text-3xl font-light text-[#061b31] tracking-tight">
-                  Your data is safe. We take that seriously.
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                  { title: 'SSL Encrypted', desc: 'All data in transit is encrypted with TLS 1.3' },
-                  { title: 'Australian Hosted', desc: 'Data stored in Australian data centres' },
-                  { title: 'No Credit Card Stored', desc: 'We never store payment details' },
-                  { title: 'GDPR & Privacy Act', desc: 'Compliant with Australian privacy law' },
-                ].map((item, i) => (
-                  <div key={i} className="text-center p-4">
-                    <div className="w-10 h-10 bg-[#f8f7ff] rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-5 h-5 text-[#533afd]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-sm font-medium text-[#061b31] mb-1">{item.title}</h3>
-                    <p className="text-xs text-[#64748d]">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </RevealSection>
-          </div>
-        </section>
-
-        {/* ===== PRICING ===== */}
         <section id="pricing" className="py-20 sm:py-28 bg-white">
           <div className="max-w-[1080px] mx-auto px-6">
             <RevealSection>
@@ -821,16 +721,7 @@ export default function Home() {
             </RevealSection>
 
             <div className="space-y-4">
-              {[
-                { q: 'How does Payment Rescue work?', a: "Payment Rescue connects to your existing tools (Square, Xero, QuickBooks) and automatically sends SMS reminders to customers with overdue invoices. You set the schedule — we handle the rest. No awkward phone calls, no guilt-tripping texts from you." },
-                { q: 'Do I need to change my accounting software?', a: "No! Payment Rescue works alongside your existing tools. We pull invoice data from Square, Xero, and QuickBooks via secure API connections. We don't replace your accounting software — we make it better." },
-                { q: 'Will my customers find the SMS messages annoying?', a: "Our templates are written to be friendly and professional — not aggressive. Most customers actually appreciate the reminder. It helps them stay on top of their payments too. You can customise the tone to match your brand." },
-                { q: 'What happens after the free trial?', a: "After 14 days, you'll be asked to pick a plan. If you don't, your account pauses (not deleted). You can reactivate anytime. No surprises, no hidden charges." },
-                { q: 'Is my data secure?', a: "Absolutely. We use SSL encryption for all data in transit. We're Australian-hosted, GDPR & Privacy Act compliant. We never store payment details or sensitive financial data beyond what's needed to send reminders." },
-                { q: 'Can I cancel anytime?', a: "Yes. No lock-in contracts. Cancel from your dashboard at any time. If you cancel, you keep all your data and can export it anytime." },
-                { q: 'What counts as an "invoice"?', a: "Any invoice synced from your connected account (Square, Xero, or QuickBooks). The counter refreshes monthly based on your plan." },
-                { q: 'Do you send reminders on weekends?', a: "By default, we only send reminders Monday-Friday between 8am-6pm AEST. You can customise these windows in your settings if you prefer different hours." },
-              ].map((faq, i) => (
+              {marketingFaqs.map((faq, i) => (
                 <RevealSection key={i} delay={Math.min(i, 3)}>
                   <details className="group bg-white border border-[#e5edf5] rounded-lg hover:border-[#b9b9f9] transition-colors">
                     <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
@@ -862,14 +753,14 @@ export default function Home() {
                 <span className="bg-gradient-to-r from-[#7c5cff] to-[#f96bee] bg-clip-text text-transparent gradient-animate">Start getting paid.</span>
               </h2>
               <p className="mt-4 text-lg text-white/50 font-light max-w-xl mx-auto">
-                Join hundreds of Australian tradies who are getting their time — and their money — back.
+                Spend less time following up on invoices and more time doing the work.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="/signup" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded-lg text-lg transition shadow-lg shadow-[#533afd]/30 btn-press">
                   Start your free trial
                 </a>
-                <a href="/signup" className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded-lg text-lg transition border border-white/10 btn-press">
-                  Talk to us first
+                <a href="#how-it-works" className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded-lg text-lg transition border border-white/10 btn-press">
+                  See how it works
                 </a>
               </div>
               <p className="mt-4 text-sm text-white/30">No credit card required · 14-day free trial · Cancel anytime</p>
@@ -881,7 +772,7 @@ export default function Home() {
       {/* ===== FOOTER ===== */}
       <footer className="bg-[#061b31] border-t border-white/10 py-12">
         <div className="max-w-[1080px] mx-auto px-6">
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#533afd] to-[#7c5cff] flex items-center justify-center">
@@ -892,35 +783,20 @@ export default function Home() {
                 </div>
                 <span className="font-semibold text-white">Payment Rescue</span>
               </div>
-              <p className="text-sm text-white/40 leading-relaxed">Helping Australian tradies get paid faster since 2026.</p>
+              <p className="text-sm text-white/40 leading-relaxed">Helping Australian tradies spend less time chasing invoices.</p>
             </div>
             <div>
               <h4 className="font-medium text-white mb-3 text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
+                <li><a href="#how-it-works" className="text-white/40 hover:text-white/70 transition">How it works</a></li>
                 <li><a href="#features" className="text-white/40 hover:text-white/70 transition">Features</a></li>
-                <li><a href="#dashboard" className="text-white/40 hover:text-white/70 transition">Dashboard</a></li>
                 <li><a href="#pricing" className="text-white/40 hover:text-white/70 transition">Pricing</a></li>
                 <li><a href="#faq" className="text-white/40 hover:text-white/70 transition">FAQ</a></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-medium text-white mb-3 text-sm">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">About</a></li>
-                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Blog</a></li>
-                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-white mb-3 text-sm">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Privacy Policy</a></li>
-                <li><a href="/signup" className="text-white/40 hover:text-white/70 transition">Terms of Service</a></li>
-              </ul>
-            </div>
           </div>
           <div className="mt-12 pt-8 border-t border-white/10 text-sm text-white/30 text-center">
-            <p>© 2026 Payment Rescue. All rights reserved. Built in Australia. 🇦🇺</p>
+            <p>© 2026 Payment Rescue. All rights reserved.</p>
           </div>
         </div>
       </footer>
