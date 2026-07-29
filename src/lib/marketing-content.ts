@@ -5,7 +5,7 @@ export const marketingFaqs = [
   },
   {
     q: 'Does it connect to my accounting software?',
-    a: 'Not in the current version. Invoices are entered manually so the website does not promise an integration that is not available yet.',
+    a: 'Not yet. Invoices are entered manually in the current version.',
   },
   {
     q: 'What does the SMS reminder include?',
@@ -21,7 +21,7 @@ export const marketingFaqs = [
   },
   {
     q: 'Do reminders send automatically or on weekends?',
-    a: 'Reminders are sent when you choose to send them from the dashboard. The current version does not claim automatic scheduling.',
+    a: 'No. You choose when to send each reminder from the dashboard, so nothing goes out automatically or on a schedule.',
   },
   {
     q: 'Is my data secure?',

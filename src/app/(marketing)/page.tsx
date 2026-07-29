@@ -296,7 +296,7 @@ export default function Home() {
                   <span className="text-[#64748d]">Now you're just waiting.</span>
                 </h2>
                 <p className="mt-4 text-lg text-[#64748d] font-light">
-                  Late payments aren't just annoying — they're killing your cash flow, your time, and your sanity.
+                  Late payments can make cash flow and follow-up harder than they need to be.
                 </p>
               </div>
             </RevealSection>
@@ -651,9 +651,9 @@ export default function Home() {
           <div className="relative max-w-[1080px] mx-auto px-6 text-center">
             <RevealSection>
               <h2 className="text-3xl sm:text-4xl font-light tracking-tight leading-tight">
-                Stop chasing invoices.
+                Keep invoice follow-up organised.
                 <br />
-                <span className="bg-gradient-to-r from-[#7c5cff] to-[#f96bee] bg-clip-text text-transparent gradient-animate">Start getting paid.</span>
+                <span className="bg-gradient-to-r from-[#7c5cff] to-[#f96bee] bg-clip-text text-transparent gradient-animate">See what still needs attention.</span>
               </h2>
               <p className="mt-4 text-lg text-white/50 font-light max-w-xl mx-auto">
                 Spend less time following up on invoices and more time doing the work.
@@ -686,7 +686,7 @@ export default function Home() {
                 </div>
                 <span className="font-semibold text-white">Payment Rescue</span>
               </div>
-              <p className="text-sm text-white/40 leading-relaxed">Helping Australian tradies spend less time chasing invoices.</p>
+              <p className="text-sm text-white/40 leading-relaxed">Invoice tracking and SMS reminders for Australian tradies.</p>
             </div>
             <div>
               <h4 className="font-medium text-white mb-3 text-sm">Product</h4>
