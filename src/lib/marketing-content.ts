@@ -1,34 +1,30 @@
 export const marketingFaqs = [
   {
     q: 'How does Payment Rescue work?',
-    a: "Payment Rescue connects to your existing tools (Square, Xero, QuickBooks) and automatically sends SMS reminders to customers with overdue invoices. You set the schedule — we handle the rest. No awkward phone calls, no guilt-tripping texts from you.",
+    a: 'Create an account, add an invoice and customer phone number, then send an SMS payment reminder from the dashboard. When the invoice is settled, mark it paid.',
   },
   {
-    q: 'Do I need to change my accounting software?',
-    a: "No! Payment Rescue works alongside your existing tools. We pull invoice data from Square, Xero, and QuickBooks via secure API connections. We don't replace your accounting software — we make it better.",
+    q: 'Does it connect to my accounting software?',
+    a: 'Not in the current version. Invoices are entered manually so the website does not promise an integration that is not available yet.',
   },
   {
-    q: 'Will my customers find the SMS messages annoying?',
-    a: 'Our templates are written to be friendly and professional — not aggressive. Most customers actually appreciate the reminder. It helps them stay on top of their payments too. You can customise the tone to match your brand.',
+    q: 'What does the SMS reminder include?',
+    a: 'The default reminder can include the customer name, invoice number, amount, due date, and your business name.',
   },
   {
-    q: 'What happens after the free trial?',
-    a: "After 14 days, you'll be asked to pick a plan. If you don't, your account pauses (not deleted). You can reactivate anytime. No surprises, no hidden charges.",
+    q: 'Can I see which reminders were sent?',
+    a: 'Yes. Payment Rescue records the reminder against the invoice and updates its reminder count and last-sent time.',
+  },
+  {
+    q: 'Can I mark an invoice as paid?',
+    a: 'Yes. You can update an invoice to paid from the dashboard after the payment arrives.',
+  },
+  {
+    q: 'Do reminders send automatically or on weekends?',
+    a: 'Reminders are sent when you choose to send them from the dashboard. The current version does not claim automatic scheduling.',
   },
   {
     q: 'Is my data secure?',
-    a: "Payment Rescue uses encrypted connections for data in transit and doesn't store payment card details.",
-  },
-  {
-    q: 'Can I cancel anytime?',
-    a: 'Yes. No lock-in contracts. Cancel from your dashboard at any time. If you cancel, you keep all your data and can export it anytime.',
-  },
-  {
-    q: 'What counts as an "invoice"?',
-    a: 'Any invoice synced from your connected account (Square, Xero, or QuickBooks). The counter refreshes monthly based on your plan.',
-  },
-  {
-    q: 'Do you send reminders on weekends?',
-    a: 'By default, we only send reminders Monday-Friday between 8am-6pm AEST. You can customise these windows in your settings if you prefer different hours.',
+    a: 'Account access is authenticated, invoice queries are scoped to the signed-in user, and the app does not store payment card details.',
   },
 ] as const;

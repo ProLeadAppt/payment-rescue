@@ -12,7 +12,7 @@ const organizationSchema = {
   "@type": "Organization",
   name: "Payment Rescue",
   url: "https://www.paymentrescue.com.au",
-  description: "Automated payment reminders for Australian tradies and small businesses",
+  description: "Invoice tracking and SMS payment reminders for Australian tradies and small businesses",
   areaServed: "AU",
 };
 

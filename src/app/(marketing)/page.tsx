@@ -113,7 +113,6 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               {[
                 { href: '#features', label: 'Features' },
                 { href: '#dashboard', label: 'Dashboard' },
-                { href: '#pricing', label: 'Pricing' },
                 { href: '#faq', label: 'FAQ' },
               ].map((link) => (
                 <li key={link.href}>
@@ -148,9 +147,9 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               onClick={onClose}
               className="block w-full text-center bg-[#533afd] hover:bg-[#4434d4] text-white font-medium py-3 px-4 rounded-lg transition text-sm btn-press shadow-lg shadow-[#533afd]/20"
             >
-              Start free trial
+              Create account
             </Link>
-            <p className="text-xs text-[#64748d] text-center">No credit card · 14-day trial</p>
+            <p className="text-xs text-[#64748d] text-center">Create an account to get started</p>
           </div>
         </div>
       </div>
@@ -201,7 +200,6 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-[#64748d] hover:text-[#061b31] transition font-medium">Features</a>
             <a href="#dashboard" className="text-sm text-[#64748d] hover:text-[#061b31] transition font-medium">Dashboard</a>
-            <a href="#pricing" className="text-sm text-[#64748d] hover:text-[#061b31] transition font-medium">Pricing</a>
             <a href="#faq" className="text-sm text-[#64748d] hover:text-[#061b31] transition font-medium">FAQ</a>
           </div>
 
@@ -217,7 +215,7 @@ export default function Home() {
               href="/signup"
               className="bg-[#533afd] hover:bg-[#4434d4] text-white text-sm font-medium px-4 py-2 rounded-lg transition shadow-sm btn-press"
             >
-              Start free trial
+              Create account
             </Link>
           </div>
 
@@ -266,33 +264,21 @@ export default function Home() {
 
               <RevealSection delay={2}>
                 <p className="mt-6 text-lg sm:text-xl text-[#64748d] leading-relaxed font-light max-w-2xl">
-                  Your customers forget. Their banks hold them up. Meanwhile you're out of pocket.
-                  Payment Rescue sends automated SMS reminders so you don't have to be the bad guy.
+                  Keep invoices, customer details, and SMS payment reminders together in one simple dashboard.
+                  Add an invoice, send a reminder when it is due, and mark it paid when the money arrives.
                 </p>
               </RevealSection>
 
               <RevealSection delay={3}>
                 <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                   <a href="/signup" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded-lg text-lg transition shadow-lg shadow-[#533afd]/20 text-center btn-press">
-                    Start your free trial
+                    Create your account
                   </a>
                   <a href="#how-it-works" className="w-full sm:w-auto bg-white hover:bg-[#f8f7ff] text-[#533afd] font-medium px-8 py-4 rounded-lg text-lg transition border border-[#b9b9f9] text-center btn-press">
                     See how it works
                   </a>
                 </div>
-                <p className="mt-4 text-sm text-[#64748d]">No credit card required · 14-day free trial · Cancel anytime</p>
-              </RevealSection>
-
-              {/* Integration logos */}
-              <RevealSection delay={4}>
-                <div className="mt-16 pt-8 border-t border-[#e5edf5]">
-                  <p className="text-xs text-[#64748d] uppercase tracking-wider mb-6 font-medium">Works with tools you already use</p>
-                  <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-50">
-                    {['Square', 'Xero', 'QuickBooks', 'Stripe'].map((name) => (
-                      <div key={name} className="text-lg font-semibold text-[#273951] tracking-tight">{name}</div>
-                    ))}
-                  </div>
-                </div>
+                <p className="mt-4 text-sm text-[#64748d]">Create an account, add an invoice, and send your first reminder.</p>
               </RevealSection>
             </div>
           </div>
@@ -369,18 +355,18 @@ export default function Home() {
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">How it works</p>
                 <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
-                  Set it up once. Get paid faster
+                  Add the invoice. Send the reminder.
                   <br />
-                  <span className="text-[#64748d]">every time after that.</span>
+                  <span className="text-[#64748d]">See what still needs attention.</span>
                 </h2>
               </div>
             </RevealSection>
 
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { step: '1', title: 'Connect in 2 minutes', desc: 'Link your Square, Xero, or QuickBooks account. We pull in your invoices automatically — no double entry, no spreadsheets.' },
-                { step: '2', title: 'Set your schedule', desc: 'Choose when reminders go out. 7 days overdue? 14? 30? You decide. Write your own messages or use our templates — friendly, not pushy.' },
-                { step: '3', title: 'Get paid. Chase less.', desc: "We send the reminders, track who's paid, and show you who still owes. You focus on the work. We handle the awkward conversations." },
+                { step: '1', title: 'Add the invoice', desc: 'Enter the customer, amount, due date, and phone number. Each invoice stays tied to your account.' },
+                { step: '2', title: 'Send an SMS reminder', desc: 'Choose the invoice and send a payment reminder from the dashboard when it needs a follow-up.' },
+                { step: '3', title: 'Track the outcome', desc: "See the reminder count, review what is still outstanding, and mark the invoice paid when it is settled." },
               ].map((item, i) => (
                 <RevealSection key={i} delay={i + 1}>
                   <div className="bg-white p-8 rounded-lg border border-[#e5edf5] text-center hover-lift h-full">
@@ -408,7 +394,7 @@ export default function Home() {
                   <span className="text-[#64748d]">Nothing you don't.</span>
                 </h2>
                 <p className="mt-4 text-lg text-[#64748d] font-light">
-                  A clean dashboard that shows you exactly who owes what, who's paid, and who needs a nudge. No clutter. No learning curve.
+                  An illustrative view of how invoices, payment status, due dates, and reminder counts appear in the dashboard.
                 </p>
               </div>
             </RevealSection>
@@ -492,9 +478,9 @@ export default function Home() {
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">The difference</p>
                 <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
-                  Manual chasing vs.
+                  Manual invoice follow-up vs.
                   <br />
-                  <span className="text-[#64748d]">Payment Rescue</span>
+                  <span className="text-[#64748d]">one focused dashboard</span>
                 </h2>
               </div>
             </RevealSection>
@@ -513,12 +499,12 @@ export default function Home() {
                   </div>
                   <ul className="space-y-4">
                     {[
-                      'Manually track invoices in spreadsheets or your head',
-                      'Call and text customers — feeling awkward and pushy',
-                      'Forget to follow up on some invoices entirely',
-                      'Pay your suppliers late because you got paid late',
-                      'Spend 5+ hours a week chasing money instead of doing work',
-                      'Stress about cash flow every weekend',
+                      'Invoice details kept in notes, messages, or spreadsheets',
+                      'Customer phone numbers stored separately',
+                      'No record of which reminder was sent',
+                      'Hard to see what is still outstanding',
+                      'Payment status updated in more than one place',
+                      'Follow-up history easy to lose',
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 text-sm text-[#64748d]">
                         <svg className="w-4 h-4 text-[#ea2261] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -547,12 +533,12 @@ export default function Home() {
                   </div>
                   <ul className="space-y-4">
                     {[
-                      'Invoices sync automatically from Square, Xero, or QuickBooks',
-                      'Friendly SMS reminders sent on autopilot — you never feel pushy',
-                      "Never miss a follow-up — the system does it for you",
-                      'Get paid on time, pay your suppliers on time',
-                      'Save 5+ hours a week. Get back to the work you love.',
-                      'Peace of mind knowing your cash flow is on track',
+                      'Invoices and customer details in one dashboard',
+                      'SMS reminders sent from the invoice record',
+                      'Reminder counts and send times recorded',
+                      'Outstanding and paid invoices kept visible',
+                      'Invoices marked paid from the dashboard',
+                      'Business and sender details stored with the account',
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 text-sm text-[#64748d]">
                         <svg className="w-4 h-4 text-[#15be53] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -584,15 +570,12 @@ export default function Home() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
-                { title: 'Automated SMS Reminders', desc: "Set it and forget it. We send friendly reminders to customers with overdue invoices. Written in your voice — professional, not robotic." },
-                { title: 'Square & Xero Sync', desc: "Connects to your existing tools. No double entry, no new software to learn. Your invoices flow in automatically." },
-                { title: "Payment Dashboard", desc: "See who's paid, who's late, and who needs a nudge — all in one place. Clear, not cluttered." },
-                { title: 'Auto-Escalation', desc: "The longer an invoice goes unpaid, the more frequently we remind. You set the rules, we execute." },
-                { title: 'Chargeback Protection', desc: "Dispute a payment? We automatically build evidence packs with timestamps and communication logs." },
-                { title: 'Cash Flow Forecast', desc: "See expected incoming payments so you can plan your week. No more guessing when money hits your account." },
-                { title: 'Email + SMS', desc: "Multi-channel reminders. Some people respond to text, others to email. We cover both — automatically." },
-                { title: 'Custom Templates', desc: "Write your own reminder messages or use our proven templates. Match your brand, your tone, your style." },
-                { title: 'Built for Australia', desc: "Australian SMS numbers, AU-friendly language, local support. We get how things work here — ABN, GST and all." },
+                { title: 'Manual Invoice Tracking', desc: 'Add the customer, amount, due date, and description without moving between separate notes and spreadsheets.' },
+                { title: 'SMS Payment Reminders', desc: 'Send a payment reminder from an invoice when you decide it needs a follow-up.' },
+                { title: 'Payment Dashboard', desc: "See what is outstanding, what has been paid, and how many reminders each invoice has received." },
+                { title: 'Reminder Records', desc: 'Keep the send time, message, provider reference, and reminder count attached to the invoice.' },
+                { title: 'Mark Invoices Paid', desc: 'Update the payment status from the dashboard when an invoice is settled.' },
+                { title: 'Business Settings', desc: 'Store your business and sender details with your account, including mobile verification for SMS.' },
               ].map((f, i) => (
                 <RevealSection key={i} delay={(i % 3) + 1}>
                   <div className="bg-[#f8f7ff] p-6 rounded-lg border border-[#e5edf5] hover:border-[#b9b9f9] transition-all hover-lift group h-full">
@@ -611,105 +594,24 @@ export default function Home() {
         </section>
 
 
-        <section id="pricing" className="py-20 sm:py-28 bg-white">
-          <div className="max-w-[1080px] mx-auto px-6">
+        <section id="access" className="py-20 sm:py-28 bg-white">
+          <div className="max-w-3xl mx-auto px-6 text-center">
             <RevealSection>
-              <div className="text-center max-w-3xl mx-auto mb-16">
-                <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">Pricing</p>
-                <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
-                  Simple, honest pricing.
-                  <br />
-                  <span className="text-[#64748d]">No surprises. No lock-in.</span>
-                </h2>
-              </div>
-            </RevealSection>
-
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {/* Starter */}
-              <RevealSection delay={1}>
-                <div className="bg-white border border-[#e5edf5] rounded-lg p-8 hover-lift h-full flex flex-col">
-                  <h3 className="text-lg font-medium text-[#061b31]">Starter</h3>
-                  <p className="text-sm text-[#64748d] mt-1">For solo tradies</p>
-                  <div className="mt-6">
-                    <span className="text-4xl font-light text-[#061b31] tracking-tight">$29</span>
-                    <span className="text-[#64748d]">/mo</span>
-                  </div>
-                  <ul className="mt-8 space-y-3 flex-1">
-                    {['Up to 50 invoices/month', 'SMS reminders', 'Square or Xero sync', 'Email support', 'Basic dashboard'].map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-[#64748d]">
-                        <svg className="w-4 h-4 text-[#15be53] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="/signup" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded-lg transition text-sm btn-press">
-                    Start free trial
-                  </a>
-                </div>
-              </RevealSection>
-
-              {/* Growth */}
-              <RevealSection delay={2}>
-                <div className="bg-[#533afd] text-white rounded-lg p-8 relative shadow-xl shadow-[#533afd]/15 h-full flex flex-col">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ea2261] text-white text-xs font-medium px-3 py-1 rounded">
-                    MOST POPULAR
-                  </div>
-                  <h3 className="text-lg font-medium">Growth</h3>
-                  <p className="text-sm text-white/60 mt-1">For growing businesses</p>
-                  <div className="mt-6">
-                    <span className="text-4xl font-light tracking-tight">$59</span>
-                    <span className="text-white/60">/mo</span>
-                  </div>
-                  <ul className="mt-8 space-y-3 flex-1">
-                    {['Up to 200 invoices/month', 'SMS + Email reminders', 'Square, Xero & QuickBooks', 'Priority support', 'Cash flow forecast', 'Chargeback protection'].map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-white/80">
-                        <svg className="w-4 h-4 text-[#15be53] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="/signup" className="mt-8 block w-full text-center bg-white hover:bg-white/90 text-[#533afd] font-medium py-3 rounded-lg transition text-sm btn-press">
-                    Start free trial
-                  </a>
-                </div>
-              </RevealSection>
-
-              {/* Pro */}
-              <RevealSection delay={3}>
-                <div className="bg-white border border-[#e5edf5] rounded-lg p-8 hover-lift h-full flex flex-col">
-                  <h3 className="text-lg font-medium text-[#061b31]">Pro</h3>
-                  <p className="text-sm text-[#64748d] mt-1">For established teams</p>
-                  <div className="mt-6">
-                    <span className="text-4xl font-light text-[#061b31] tracking-tight">$99</span>
-                    <span className="text-[#64748d]">/mo</span>
-                  </div>
-                  <ul className="mt-8 space-y-3 flex-1">
-                    {['Unlimited invoices', 'SMS + Email + Voice call reminders', 'All integrations', 'Dedicated account manager', 'Custom templates & API access', 'White-label options'].map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-[#64748d]">
-                        <svg className="w-4 h-4 text-[#15be53] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="/signup" className="mt-8 block w-full text-center bg-[#f8f7ff] hover:bg-[#eeeaff] text-[#533afd] font-medium py-3 rounded-lg transition text-sm btn-press">
-                    Start free trial
-                  </a>
-                </div>
-              </RevealSection>
-            </div>
-            <RevealSection delay={4}>
-              <p className="text-center mt-8 text-sm text-[#64748d]">All plans include a 14-day free trial · No credit card required · Cancel anytime</p>
+              <p className="text-sm font-medium text-[#533afd] uppercase tracking-wider mb-3">Get started</p>
+              <h2 className="text-3xl sm:text-4xl font-light text-[#061b31] tracking-tight leading-tight">
+                Create an account and try the current workflow.
+              </h2>
+              <p className="mt-4 text-lg text-[#64748d] font-light">
+                Pricing and paid plans are not published yet. Create an account to add invoices and send SMS reminders.
+              </p>
+              <a href="/signup" className="mt-8 inline-block bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded-lg transition shadow-lg shadow-[#533afd]/20 btn-press">
+                Create account
+              </a>
             </RevealSection>
           </div>
         </section>
 
-        {/* ===== FAQ ===== */}
+
         <section id="faq" className="py-20 sm:py-28 bg-[#f8f7ff]">
           <div className="max-w-2xl mx-auto px-6">
             <RevealSection>
@@ -758,13 +660,13 @@ export default function Home() {
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="/signup" className="w-full sm:w-auto bg-[#533afd] hover:bg-[#4434d4] text-white font-medium px-8 py-4 rounded-lg text-lg transition shadow-lg shadow-[#533afd]/30 btn-press">
-                  Start your free trial
+                  Create your account
                 </a>
                 <a href="#how-it-works" className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded-lg text-lg transition border border-white/10 btn-press">
                   See how it works
                 </a>
               </div>
-              <p className="mt-4 text-sm text-white/30">No credit card required · 14-day free trial · Cancel anytime</p>
+              <p className="mt-4 text-sm text-white/30">Add invoices manually and send SMS reminders from the dashboard.</p>
             </RevealSection>
           </div>
         </section>
@@ -791,7 +693,6 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#how-it-works" className="text-white/40 hover:text-white/70 transition">How it works</a></li>
                 <li><a href="#features" className="text-white/40 hover:text-white/70 transition">Features</a></li>
-                <li><a href="#pricing" className="text-white/40 hover:text-white/70 transition">Pricing</a></li>
                 <li><a href="#faq" className="text-white/40 hover:text-white/70 transition">FAQ</a></li>
               </ul>
             </div>
@@ -805,7 +706,7 @@ export default function Home() {
       {/* ===== STICKY MOBILE CTA ===== */}
       <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur border-t border-[#e5edf5] p-4 shadow-lg no-print">
         <a href="/signup" className="block w-full bg-[#533afd] hover:bg-[#4434d4] text-white font-medium py-3 rounded-lg text-center text-base transition btn-press shadow-lg shadow-[#533afd]/20">
-          Start your free trial
+          Create your account
         </a>
       </div>
     </div>

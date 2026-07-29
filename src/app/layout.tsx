@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.paymentrescue.com.au"),
-  title: "Payment Rescue — Get Paid Faster, Chase Less, Lose Less",
-  description: "Payment Rescue helps Australian tradies and small businesses get paid faster with automated SMS reminders, invoice tracking, and chargeback protection. Start free today.",
-  keywords: ["payment reminders", "invoice chasing", "small business payments", "tradie tools", "get paid faster", "late payments", "chargeback protection", "Australian small business"],
+  title: "Payment Rescue | Invoice Tracking and SMS Reminders",
+  description: "Track invoices, customer phone numbers, reminder history, and payment status. Send SMS payment reminders from one dashboard.",
+  keywords: ["payment reminders", "invoice tracking", "SMS reminders", "tradie tools", "late payments", "Australian small business"],
   openGraph: {
-    title: "Payment Rescue — Get Paid Faster, Chase Less, Lose Less",
-    description: "Automated SMS payment reminders for Australian tradies. Stop chasing invoices. Start getting paid.",
+    title: "Payment Rescue | Invoice Tracking and SMS Reminders",
+    description: "Track invoices and send SMS payment reminders from one focused dashboard.",
     type: "website",
     locale: "en_AU",
     url: "https://www.paymentrescue.com.au/",
@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-AU"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
