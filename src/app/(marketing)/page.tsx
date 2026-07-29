@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { marketingFaqs } from '@/lib/marketing-content';
 
 /* ============================================
